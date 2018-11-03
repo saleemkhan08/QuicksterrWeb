@@ -1,0 +1,12 @@
+{
+  "Active": "Y",
+  "category": "Starters",
+  "description": "Some sample description",
+  "name": "Some Starter 1",
+  "packingCharge": "25",
+  "price": "250",
+  "serviceCharge": "25",
+  "tax": "12.5",
+  "variant": "half full",
+  "veg": "N"
+}
