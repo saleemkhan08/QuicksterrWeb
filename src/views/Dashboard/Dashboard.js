@@ -11,9 +11,10 @@ import Tables from "./rightPanes/tables/Tables";
 import Menu from "./rightPanes/menu/Menu";
 import Chefs from "./rightPanes/chefs/Chefs";
 import Waiters from "./rightPanes/waiters/Waiters";
-import Inventory from "./rightPanes/inventory/Inventory";
+import Category from "./rightPanes/categories/Categories";
 import Notifications from "./rightPanes/notifications/Notifications";
 import {
+  setAdminStatus,
   changeNavbarColor,
   changeMainContentType,
   MENU_DETAILS,
@@ -21,11 +22,13 @@ import {
   TABLE_DETAILS,
   CHEF_DETAILS,
   WAITER_DETAILS,
-  INVENTORY_DETAILS,
-  NOTIFICATION_DETAILS
+  CATEGORY_DETAILS,
+  NOTIFICATION_DETAILS,
+  MASTER_ADMIN,
+  RESTAURANT_ADMIN
 } from "../../actions/authActions";
 import { fetchChefs } from "../../actions/chefsActions";
-import { fetchCategories } from "../../actions/menuActions";
+import { fetchCategories, resetMenu } from "../../actions/menuActions";
 import { fetchCurrentRestaurant } from "../../actions/restaurantActions";
 import { fetchTables } from "../../actions/tablesActions";
 import { fetchWaiters } from "../../actions/waitersActions";
@@ -35,7 +38,6 @@ class Dashboard extends React.Component {
     if (this.props.auth.navbarColor !== "white") {
       this.props.dispatch(changeNavbarColor("white"));
     }
-
     //setting the current restaurant
     const { restaurantId } = this.props.match.params;
     this.props.dispatch(fetchCurrentRestaurant(restaurantId));
@@ -49,13 +51,27 @@ class Dashboard extends React.Component {
     //Setting the default tab for dashboard
     this.props.dispatch(changeMainContentType());
   }
+  componentWillUnmount() {
+    this.props.dispatch(resetMenu());
+  }
   render() {
     const { classes } = this.props;
     const { restaurantId } = this.props.match.params;
+    console.log(">>>>>>>>>> restaurantId: ", restaurantId);
+    //set admin status
+    const { user, isAdmin } = this.props.auth;
+    if (user) {
+      const isAdminTemp =
+        user.type === MASTER_ADMIN ||
+        (user.restaurantId === restaurantId && user.type === RESTAURANT_ADMIN);
+      if (isAdminTemp !== isAdmin) {
+        this.props.dispatch(setAdminStatus(isAdminTemp));
+      }
+    }
     return (
       <div className={classes.root}>
         <DrawerContent />
-        <main className={classes.content}>
+        <main className="content">
           <div className={classes.toolbar} />
           {this.showRightPane(this.props.auth.mainContentType, restaurantId)}
         </main>
@@ -73,8 +89,8 @@ class Dashboard extends React.Component {
         return <Chefs restaurantId={restaurantId} />;
       case WAITER_DETAILS.name:
         return <Waiters restaurantId={restaurantId} />;
-      case INVENTORY_DETAILS.name:
-        return <Inventory restaurantId={restaurantId} />;
+      case CATEGORY_DETAILS.name:
+        return <Category restaurantId={restaurantId} />;
       case NOTIFICATION_DETAILS.name:
         return <Notifications restaurantId={restaurantId} />;
       case MENU_DETAILS.name:

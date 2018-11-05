@@ -9,7 +9,8 @@ import {
   fetchRestaurants,
   addRestaurants,
   editRestaurants,
-  deleteRestaurants
+  deleteRestaurants,
+  fetchCurrentRestaurant
 } from "../../actions/restaurantActions";
 import {
   changeNavbarColor,
@@ -61,6 +62,8 @@ class RestaurantPage extends React.Component {
             handleEdit={this.handleEdit}
             handleAdd={this.handleAdd}
             handleDelete={this.handleDelete}
+            onLinkClick={this.handleLinkClick}
+            horizontal
           />
           <RestaurantAddDialog
             open={this.state.openAddDialog}
@@ -77,6 +80,9 @@ class RestaurantPage extends React.Component {
       </div>
     );
   }
+  handleLinkClick = restaurantId => {
+    this.props.dispatch(fetchCurrentRestaurant(restaurantId));
+  };
 
   handleAdd() {
     this.setState({

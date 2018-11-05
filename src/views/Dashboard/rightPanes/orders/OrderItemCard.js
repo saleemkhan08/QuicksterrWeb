@@ -1,16 +1,8 @@
 import React, { Component } from "react";
-import { ORDER_DETAILS } from "../../../../actions/authActions";
 import GridItem from "../../../../components/Grid/GridItem";
 import PropTypes from "prop-types";
 import Paper from "@material-ui/core/Paper";
 import Divider from "@material-ui/core/Divider";
-import { IconButton } from "@material-ui/core";
-import EditIcon from "@material-ui/icons/Edit";
-import ClearIcon from "@material-ui/icons/Clear";
-import AddIcon from "@material-ui/icons/AddCircleOutlineRounded";
-import RemoveIcon from "@material-ui/icons/RemoveCircleOutlineRounded";
-import Button from "@material-ui/core/Button";
-import order from "../../../../assets/img/sidebar-icons/orders.svg";
 import "./Order.css";
 import { connect } from "react-redux";
 import {
@@ -21,7 +13,6 @@ import {
   DINING,
   PAYMENT_RECEIVED
 } from "../../../../actions/ordersActions";
-import { showMessage } from "../../../../actions/messageActions";
 
 import orderPlaced from "../../../../assets/img/sidebar-icons/orderPlaced.svg";
 import prepairing from "../../../../assets/img/sidebar-icons/prepairing.svg";
@@ -38,7 +29,7 @@ class OrderItemCard extends Component {
     return (
       <GridItem xs={12} sm={6} md={4} lg={3}>
         <Paper className="menuCardContainer">
-          <img className="menuItemImg" src={icon} />
+          <img alt="" className="menuItemImg" src={icon} />
           <div className="title-container">
             <div>
               <h5 className="table-name">{table}</h5>

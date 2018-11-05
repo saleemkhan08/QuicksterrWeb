@@ -6,7 +6,8 @@ import {
   FETCH_CATEGORIES_SUCCESS,
   DISPLAY_CATEGORIES_TAB,
   HIDE_CATEGORIES_TAB,
-  SET_CURRENT_CATEGORY
+  SET_CURRENT_CATEGORY,
+  RESET_MENU
 } from "../actions/menuActions";
 
 const initialState = {
@@ -20,6 +21,8 @@ const initialState = {
 
 const MenuReducer = (state = initialState, action) => {
   switch (action.type) {
+    case RESET_MENU:
+      return initialState;
     case FETCH_CATEGORIES_BEGIN:
       return {
         ...state,

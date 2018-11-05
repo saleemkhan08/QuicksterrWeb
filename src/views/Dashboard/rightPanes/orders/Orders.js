@@ -18,7 +18,12 @@ class Orders extends Component {
   render() {
     const { orders, isLoading } = this.props.reducer;
     return (
-      <CRUDList items={orders} detail={ORDER_DETAILS} isLoading={isLoading}>
+      <CRUDList
+        hideAddBtn
+        items={orders}
+        detail={ORDER_DETAILS}
+        isLoading={isLoading}
+      >
         <div className="date-picker">
           <Datetime
             inputProps={{ placeholder: "Date" }}

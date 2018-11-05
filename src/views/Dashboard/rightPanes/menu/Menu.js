@@ -14,9 +14,11 @@ import DishEditDialog from "./DishEditDialog";
 
 import {
   displayCategoriesTabs,
-  hideCategoriesTabs
+  hideCategoriesTabs,
+  setCurrentCategory
 } from "../../../../actions/menuActions";
 import TableAndUserSetter from "./TableAndUserSetter";
+import MenuImport from "./MenuImport";
 
 class Menu extends Component {
   constructor(props) {
@@ -43,13 +45,9 @@ class Menu extends Component {
     this.props.dispatch(hideCategoriesTabs());
   }
 
-  render() {
+  componentDidUpdate() {
     const { restaurantId } = this.props;
     const { currentCategory } = this.props.menuReducer;
-    const isCategoriesLoading = this.props.menuReducer.isLoading;
-    const { dishes } = this.props.dishReducer;
-    let { isLoading } = this.props.dishReducer;
-    const menuItemDetails = MENU_ITEM_DETAILS;
     if (
       currentCategory !== undefined &&
       currentCategory !== this.state.currentCategory
@@ -57,22 +55,34 @@ class Menu extends Component {
       this.setState({
         currentCategory
       });
-      menuItemDetails.name = currentCategory.name;
+      MENU_ITEM_DETAILS.name = currentCategory.name;
       this.props.dispatch(fetchDishes(restaurantId, currentCategory.id));
     }
+  }
 
+  render() {
+    const { isAdmin } = this.props.authReducer;
+    const isCategoriesLoading = this.props.menuReducer.isLoading;
+    let { isLoading, dishes } = this.props.dishReducer;
     const crudItems = this.getCrudItemsFromDishes(dishes);
+    console.log(">>>>>>>>>>>>>> crudItems : ", crudItems);
     return (
       <div>
-        {!isCategoriesLoading ? <div style={{ height: "40px" }} /> : ""}
+        {!isCategoriesLoading || crudItems.length > 0 ? (
+          <div style={{ height: "40px" }} />
+        ) : (
+          ""
+        )}
         <CrudList
           items={crudItems}
-          detail={menuItemDetails}
+          detail={MENU_ITEM_DETAILS}
           isLoading={isLoading}
           handleEdit={this.handleEdit}
           handleAdd={this.handleAdd}
           handleDelete={this.handleDelete}
-        />
+        >
+          {isAdmin ? <MenuImport onMenuImported={this.onMenuImported} /> : ""}
+        </CrudList>
         <DishAddDialog
           open={this.state.openAddDialog}
           handleAddSave={this.handleAddSave}
@@ -88,6 +98,12 @@ class Menu extends Component {
       </div>
     );
   }
+
+  onMenuImported = () => {
+    const { categories } = this.props.menuReducer;
+    this.props.dispatch(setCurrentCategory(categories[0]));
+  };
+
   getCrudItemsFromDishes(dishes) {
     if (dishes) {
       const items = [];
@@ -165,14 +181,16 @@ Menu.propTypes = {
   dishReducer: PropTypes.object,
   menuReducer: PropTypes.object,
   orderReducer: PropTypes.object,
-  heading: PropTypes.string
+  heading: PropTypes.string,
+  authReducer: PropTypes.object
 };
 
 const mapStateToProps = state => {
   return {
     menuReducer: state.MenuReducer,
     dishReducer: state.DishesReducer,
-    orderReducer: state.OrderReducer
+    orderReducer: state.OrderReducer,
+    authReducer: state.AuthReducer
   };
 };
 

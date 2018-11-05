@@ -3,7 +3,8 @@ import {
   LOGOUT_USER,
   FETCH_USER,
   CHANGE_NAVBAR_COLOR,
-  CHANGE_MAIN_CONTENT_TYPE
+  CHANGE_MAIN_CONTENT_TYPE,
+  SET_ADMIN_STATUS
 } from "../actions/authActions";
 
 const AuthReducer = (state = initialState, action) => {
@@ -38,6 +39,11 @@ const AuthReducer = (state = initialState, action) => {
         ...state,
         mainContentType: action.payload
       };
+    case SET_ADMIN_STATUS:
+      return {
+        ...state,
+        isAdmin: action.payload
+      };
     default:
       return state;
   }
@@ -48,7 +54,8 @@ const initialState = {
   isLoggingLoading: true,
   user: null,
   navbarColor: "white",
-  mainContentType: "Menu"
+  mainContentType: "Menu",
+  isAdmin: false
 };
 
 export default AuthReducer;

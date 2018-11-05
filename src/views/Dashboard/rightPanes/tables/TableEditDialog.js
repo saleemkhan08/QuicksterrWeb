@@ -10,7 +10,7 @@ export default class TableEditDialog extends React.Component {
     this.state = {
       id: "",
       name: "",
-      description: ""
+      capacity: ""
     };
   }
 
@@ -27,11 +27,11 @@ export default class TableEditDialog extends React.Component {
         this.setState({
           name: table.name,
           id: table.id,
-          description: table.description
+          capacity: table.capacity
         });
       }
     }
-    const { name, description } = this.state;
+    const { name, capacity } = this.state;
     const heading = "Edit Table Details";
     return (
       <div>
@@ -51,13 +51,14 @@ export default class TableEditDialog extends React.Component {
             className="inputFields"
           />
           <TextField
-            id="description"
-            label="Table Description"
-            margin="normal"
-            fullWidth
-            value={description}
+            id="capacity"
+            label="Capacity"
+            value={capacity}
             onChange={this.handleChange}
+            type="number"
+            fullWidth
             className="inputFields"
+            margin="normal"
           />
         </EditDialog>
       </div>
@@ -66,7 +67,7 @@ export default class TableEditDialog extends React.Component {
   handleSave() {
     const table = this.props.table;
     table.name = this.state.name;
-    table.description = this.state.description;
+    table.capacity = this.state.capacity;
     this.props.handleEditSave(table);
   }
 

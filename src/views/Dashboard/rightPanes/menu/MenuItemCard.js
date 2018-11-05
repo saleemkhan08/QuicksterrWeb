@@ -30,7 +30,7 @@ export class MenuItemCard extends Component {
       <GridItem xs={12} sm={6} md={4} lg={3}>
         <Paper className="menuCardContainer">
           {this.getAdminOptions(item)}
-          <img className="menuItemImg" src={icon} />
+          <img alt="" className="menuItemImg" src={icon} />
           <h5 className="cardHeading">{item.name}</h5>
           <p className="cardDescription">{item.description}</p>
           <Divider className="divider" />

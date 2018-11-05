@@ -61,16 +61,13 @@ export function fetchAndDeleteDishes(restaurantId, categoryId) {
 }
 
 export function addMenuItems(restaurantId, categoryId, dishes) {
-  console.log("addMenuItems : dishes : ", dishes);
   const ref = dishesCollectionRef(restaurantId, categoryId);
   let dishCount = dishes.length;
   return new Promise((resolve, reject) => {
     for (let i = 0; i < dishes.length; i++) {
       const newDishRef = ref.doc();
       const dish = dishes[i];
-      console.log("Promise before : dish : ", dish);
       dish.id = newDishRef.id;
-      console.log("Promise after : dish : ", dish);
       newDishRef
         .set(dish)
         .then(() => {

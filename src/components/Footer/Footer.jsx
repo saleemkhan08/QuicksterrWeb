@@ -9,20 +9,16 @@ import { List, ListItem, withStyles } from "@material-ui/core";
 // @material-ui/icons
 import Favorite from "@material-ui/icons/Favorite";
 
-import footerStyle from "assets/jss/material-kit-react/components/footerStyle.jsx";
+import footerStyle from "../../assets/jss/material-kit-react/components/footerStyle.jsx";
 
 function Footer({ ...props }) {
   const { classes, whiteFont } = props;
-  const footerClasses = classNames({
-    [classes.footer]: true,
-    [classes.footerWhiteFont]: whiteFont
-  });
   const aClasses = classNames({
     [classes.a]: true,
     [classes.footerWhiteFont]: whiteFont
   });
   return (
-    <footer className={footerClasses}>
+    <footer className="footer">
       <div className={classes.container}>
         <div className={classes.left}>
           <List className={classes.list}>

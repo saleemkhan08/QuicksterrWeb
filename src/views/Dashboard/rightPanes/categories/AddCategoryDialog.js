@@ -17,6 +17,7 @@ export default class AddCategoryDialog extends React.Component {
       [event.target.id]: event.target.value
     });
   };
+
   render() {
     const { name } = this.state;
     return (

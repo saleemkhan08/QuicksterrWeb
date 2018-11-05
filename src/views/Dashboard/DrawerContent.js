@@ -15,11 +15,12 @@ import closeDrawer from "../../assets/img/sidebar-icons/chevron-close.svg";
 import openDrawer from "../../assets/img/sidebar-icons/chevron-open.svg";
 import "./Dashboard.css";
 import { styles } from "./DashboardStyle";
-import { changeMainContentType } from "../../actions/authActions";
+import {
+  changeMainContentType,
+  CATEGORY_DETAILS
+} from "../../actions/authActions";
 import { connect } from "react-redux";
 import { sidebarLinks, MENU_DETAILS } from "../../actions/authActions";
-
-import MenuDrawerList from "./rightPanes/menu/MenuDrawerList";
 
 class DrawerContent extends Component {
   constructor(props) {
@@ -34,7 +35,6 @@ class DrawerContent extends Component {
   }
 
   handleDrawer = () => {
-    // current user is admin/ master admin
     if (this.state.open) {
       this.setState({ expand: false, open: false });
     } else {
@@ -52,6 +52,7 @@ class DrawerContent extends Component {
     return (
       <Drawer
         variant="permanent"
+        className="drawer-container"
         classes={{
           paper: classNames(
             classes.drawerPaper,
@@ -72,12 +73,6 @@ class DrawerContent extends Component {
           <ListItemText primary="Close" className="sidebar-item-text" />
         </ListItem>
         <Divider />
-        <MenuDrawerList
-          expand={this.state.expand}
-          handleItemClick={this.handleItemClick}
-          handleMenuExpand={this.handleMenuExpand}
-          activeItem={this.state.activeItem}
-        />
         {this.sideBarItems()}
       </Drawer>
     );
@@ -85,6 +80,9 @@ class DrawerContent extends Component {
 
   sideBarItems() {
     return sidebarLinks.map(link => {
+      if (link.name === CATEGORY_DETAILS.name && !this.props.auth.isAdmin) {
+        return "";
+      }
       return this.showListItem(link, this.handleItemClick, "");
     });
   }
@@ -135,12 +133,14 @@ DrawerContent.propTypes = {
   classes: PropTypes.object.isRequired,
   theme: PropTypes.object.isRequired,
   dispatch: PropTypes.func,
-  reducer: PropTypes.object
+  reducer: PropTypes.object,
+  auth: PropTypes.object
 };
 
 const mapStateToProps = state => {
   return {
-    reducer: state.MenuReducer
+    reducer: state.MenuReducer,
+    auth: state.AuthReducer
   };
 };
 

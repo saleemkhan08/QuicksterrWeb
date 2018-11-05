@@ -4,7 +4,7 @@ import orders from "../assets/img/sidebar-icons/orders.svg";
 import tables from "../assets/img/sidebar-icons/tables.svg";
 import waiters from "../assets/img/sidebar-icons/waiters.svg";
 import notifications from "../assets/img/sidebar-icons/notifications.svg";
-import inventory from "../assets/img/sidebar-icons/inventory.svg";
+import category from "../assets/img/sidebar-icons/category.svg";
 import menu from "../assets/img/sidebar-icons/menu.svg";
 import dish from "../assets/img/sidebar-icons/dishes.svg";
 
@@ -16,7 +16,7 @@ export const USERS = "users";
 export const RESTAURANT_ID = "restaurantId";
 export const TYPE = "type";
 export const CHANGE_MAIN_CONTENT_TYPE = "CHANGE_MAIN_CONTENT_TYPE";
-
+export const SET_ADMIN_STATUS = "SET_ADMIN_STATUS";
 export const RESTAURANT_DETAILS = {
   name: "Restaurants",
   type: "RESTAURANT_DETAILS",
@@ -84,13 +84,13 @@ export const WAITER_DETAILS = {
   deleteConfirmMsgEnd: "\" from waiter's position?"
 };
 
-export const INVENTORY_DETAILS = {
-  name: "Inventory",
-  type: "INVENTORY_DETAILS",
-  icon: inventory,
-  emptyListMsg: "No items found in inventory!",
+export const CATEGORY_DETAILS = {
+  name: "Category",
+  type: "CATEGORY_DETAILS",
+  icon: category,
+  emptyListMsg: "No items found in category!",
   deleteConfirmMsgStart: 'Are you sure you want to delete "',
-  deleteConfirmMsgEnd: '" from inventory?'
+  deleteConfirmMsgEnd: '" from category?'
 };
 
 export const NOTIFICATION_DETAILS = {
@@ -107,11 +107,12 @@ export const CHEF = "chef";
 export const USER = "user";
 
 export const sidebarLinks = [
+  MENU_DETAILS,
+  CATEGORY_DETAILS,
   ORDER_DETAILS,
   TABLE_DETAILS,
   CHEF_DETAILS,
   WAITER_DETAILS,
-  INVENTORY_DETAILS,
   NOTIFICATION_DETAILS
 ];
 
@@ -146,4 +147,9 @@ export const changeNavbarColor = color => ({
 
 export const logoutUser = () => ({
   type: LOGOUT_USER
+});
+
+export const setAdminStatus = status => ({
+  type: SET_ADMIN_STATUS,
+  payload: status
 });

@@ -11,14 +11,8 @@ import { IconButton } from "@material-ui/core";
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import Divider from "@material-ui/core/Divider";
 import MenuItemCard from "../views/Dashboard/rightPanes/menu/MenuItemCard";
 import OrderItemCard from "../views/Dashboard/rightPanes/orders/OrderItemCard";
-import TableItemCard from "../views/Dashboard/rightPanes/tables/TableItemCard";
-import ChefItemCard from "../views/Dashboard/rightPanes/chefs/ChefItemCard";
-import WaiterItemCard from "../views/Dashboard/rightPanes/waiters/WaiterItemCard";
-import InventoryItemCard from "../views/Dashboard/rightPanes/inventory/InventoryItemCard";
-import NotificationItemCard from "../views/Dashboard/rightPanes/notifications/NotificationItemCard";
 import {
   CircularLoading,
   CenteredText
@@ -26,15 +20,8 @@ import {
 import DeleteDialog from "../components/dialogs/DeleteDialog";
 import {
   RESTAURANT_DETAILS,
-  RESTAURANT_ADMIN,
-  MASTER_ADMIN,
   MENU_ITEM_DETAILS,
-  ORDER_DETAILS,
-  TABLE_DETAILS,
-  CHEF_DETAILS,
-  WAITER_DETAILS,
-  INVENTORY_DETAILS,
-  NOTIFICATION_DETAILS
+  ORDER_DETAILS
 } from "../actions/authActions";
 import Button from "@material-ui/core/Button";
 
@@ -49,29 +36,21 @@ class CRUDList extends Component {
       showAdminOptions: false
     };
     this.handleDeleteAccepted = this.handleDeleteAccepted.bind(this);
+    this.handleDeleteClick = this.handleDeleteClick.bind(this);
   }
-
   componentDidUpdate() {
-    const { user, restaurantId } = this.props.auth;
-    const { currentRestaurant } = this.props.reducer;
-    const showAdminOptions =
-      user &&
-      (user.type === MASTER_ADMIN ||
-        (currentRestaurant &&
-          user.type === RESTAURANT_ADMIN &&
-          currentRestaurant.restaurantId === restaurantId));
-    if (showAdminOptions !== this.state.showAdminOptions) {
+    const { isAdmin } = this.props.auth;
+    if (isAdmin !== this.state.showAdminOptions) {
       this.setState({
-        showAdminOptions
+        showAdminOptions: isAdmin
       });
     }
   }
   render() {
     const { items, detail, reducer } = this.props;
-
     return (
       <div>
-        {this.getBreadCrum(detail, reducer)}
+        {this.getBreadCrumb(detail, reducer)}
         <GridContainer>{this.showRows(items, detail)}</GridContainer>
         {this.state.showAdminOptions ? (
           <DeleteDialog
@@ -87,24 +66,38 @@ class CRUDList extends Component {
     );
   }
 
-  getBreadCrum(detail, reducer) {
-    if (detail.name === RESTAURANT_DETAILS.name) {
-      return (
-        <h3>
-          {detail.name}
-          {this.getAddButton()}
+  getBreadCrumb(detail, reducer) {
+    if (this.props.isLoading || this.props.reducer.isCurrentRestaurantLoading) {
+      return "";
+    }
+    return (
+      <div className="bread-crumb-container">
+        <h3 className="bread-crumb-title">
+          {this.getBreadCrumbTitle(detail, reducer)}
+          <span className="bread-crumb-title-btn-container">
+            {this.getAddButton()}
+            {this.props.children}
+          </span>
         </h3>
-      );
+        <div className="bread-crumb-btn-container">
+          {this.getAddButton()}
+          {this.props.children}
+        </div>
+      </div>
+    );
+  }
+
+  getBreadCrumbTitle(detail, reducer) {
+    if (detail.name === RESTAURANT_DETAILS.name) {
+      return detail.name;
     } else if (reducer.currentRestaurant) {
       const restaurantName = reducer.currentRestaurant.name;
       return (
-        <h3>
+        <span>
           <strong style={{ fontWeight: 400 }}> {restaurantName} </strong>
           {" - "}
           {detail.name}
-          {this.getAddButton()}
-          {this.props.children}
-        </h3>
+        </span>
       );
     } else {
       return "";
@@ -112,13 +105,12 @@ class CRUDList extends Component {
   }
 
   getAddButton() {
-    if (this.state.showAdminOptions) {
+    if (this.state.showAdminOptions && !this.props.hideAddBtn) {
       return (
         <Button
           variant="outlined"
           aria-label="Add"
           color="primary"
-          style={{ marginLeft: "15px", boxShadow: "none" }}
           className="default-button"
           onClick={this.props.handleAdd}
         >
@@ -156,7 +148,7 @@ class CRUDList extends Component {
   }
 
   showRows(items, detail) {
-    if (this.props.isLoading) {
+    if (this.props.isLoading || this.props.reducer.isCurrentRestaurantLoading) {
       return <CircularLoading />;
     } else if (items.length > 0) {
       return items.map(item => {
@@ -167,7 +159,7 @@ class CRUDList extends Component {
                 key={item.id}
                 item={item}
                 handleDeleteClick={this.handleDeleteClick}
-                handleEdit={this.handleEdit}
+                handleEdit={this.props.handleEdit}
                 showAdminOptions={this.state.showAdminOptions}
               />
             );
@@ -177,51 +169,9 @@ class CRUDList extends Component {
                 key={item.id}
                 item={item}
                 handleDeleteClick={this.handleDeleteClick}
-                handleEdit={this.handleEdit}
+                handleEdit={this.props.handleEdit}
               />
             );
-          // case TABLE_DETAILS.type:
-          //   return (
-          //     <TableItemCard
-          //       key={item.id}
-          //       item={item}
-          //       handleDeleteClick={this.handleDeleteClick}
-          //       handleEdit={this.handleEdit}
-          //     />
-          //   );
-          // case CHEF_DETAILS.type:
-          //   return (
-          //     <ChefItemCard
-          //       key={item.id}
-          //       item={item}
-          //       handleDeleteClick={this.handleDeleteClick}
-          //     />
-          //   );
-          // case WAITER_DETAILS.type:
-          //   return (
-          //     <WaiterItemCard
-          //       key={item.id}
-          //       item={item}
-          //       handleDeleteClick={this.handleDeleteClick}
-          //     />
-          //   );
-          // case INVENTORY_DETAILS.type:
-          //   return (
-          //     <InventoryItemCard
-          //       key={item.id}
-          //       item={item}
-          //       handleDeleteClick={this.handleDeleteClick}
-          //       handleEdit={this.handleEdit}
-          //     />
-          //   );
-          // case NOTIFICATION_DETAILS.type:
-          //   return (
-          //     <NotificationItemCard
-          //       key={item.id}
-          //       item={item}
-          //       handleDeleteClick={this.handleDeleteClick}
-          //     />
-          //   );
           default:
             return this.getCard(item);
         }
@@ -240,7 +190,7 @@ class CRUDList extends Component {
           <Paper className="default-card">
             {this.getAdminOptions(item)}
 
-            <Link to={link}>
+            <Link to={link} onClick={() => this.onLinkClick(item)}>
               <div className="default-container">
                 <div className="default-cardImg-container">
                   <img src={icon} alt="..." className="default-cardImg" />
@@ -257,7 +207,11 @@ class CRUDList extends Component {
       </GridItem>
     );
   }
-
+  onLinkClick = item => {
+    if (this.props.detail.name === RESTAURANT_DETAILS.name) {
+      this.props.onLinkClick(item.id);
+    }
+  };
   getAdminOptions(item) {
     if (this.state.showAdminOptions) {
       return (
@@ -268,7 +222,14 @@ class CRUDList extends Component {
           {this.props.hideEdit ? (
             ""
           ) : (
-            <IconButton className="default-editBtn" size="small">
+            <IconButton
+              className={
+                this.props.horizontal
+                  ? "default-editBtn-horizontal"
+                  : "default-editBtn"
+              }
+              size="small"
+            >
               <EditIcon onClick={() => this.props.handleEdit(item.object)} />
             </IconButton>
           )}
@@ -288,7 +249,10 @@ CRUDList.propTypes = {
   handleAdd: PropTypes.func,
   reducer: PropTypes.object,
   auth: PropTypes.object,
-  children: PropTypes.node
+  children: PropTypes.node,
+  hideAddBtn: PropTypes.bool,
+  onLinkClick: PropTypes.func,
+  horizontal: PropTypes.bool
 };
 
 const mapStateToProps = state => {

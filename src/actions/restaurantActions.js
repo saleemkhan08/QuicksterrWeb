@@ -25,7 +25,7 @@ export const DELETE_RESTAURANTS_ERROR = "DELETE_RESTAURANTS_ERROR";
 export const FETCH_CURRENT_RESTAURANT_BEGIN = "FETCH_CURRENT_RESTAURANT_BEGIN";
 export const FETCH_CURRENT_RESTAURANT_SUCCESS =
   "FETCH_CURRENT_RESTAURANT_SUCCESS";
-
+export const RESET_CURRENT_RESTAURANT = "RESET_CURRENT_RESTAURANT";
 export function fetchRestaurants() {
   return dispatch => {
     dispatch(fetchRestaurantsBegin());
@@ -39,14 +39,15 @@ export function fetchRestaurants() {
     });
   };
 }
-
+export const resetCurrentRestaurant = () => ({
+  type: RESET_CURRENT_RESTAURANT
+});
 export function fetchCurrentRestaurant(restaurantId) {
   return dispatch => {
     dispatch(fetchCurrentRestaurantBegin());
     const restaurantRef = firestore.collection(RESTAURANTS).doc(restaurantId);
     restaurantRef.get().then(docSnapshot => {
       const restaurant = docSnapshot.data();
-      console.log(">>>>>>>>>>>>>>>>>>>> restaurant :", restaurant);
       dispatch(fetchCurrentRestaurantSuccess(restaurant));
     });
   };

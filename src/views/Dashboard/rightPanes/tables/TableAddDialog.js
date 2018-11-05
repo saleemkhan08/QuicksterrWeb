@@ -9,7 +9,7 @@ export default class TableAddDialog extends React.Component {
     this.handleCancel = this.handleCancel.bind(this);
     this.state = {
       name: "",
-      description: ""
+      capacity: ""
     };
   }
 
@@ -19,7 +19,7 @@ export default class TableAddDialog extends React.Component {
     });
   };
   render() {
-    const { name, description } = this.state;
+    const { name, capacity } = this.state;
     return (
       <div>
         <EditDialog
@@ -37,15 +37,15 @@ export default class TableAddDialog extends React.Component {
             onChange={this.handleChange}
             className="inputFields"
           />
-
           <TextField
-            id="description"
-            label="Table Description"
-            margin="normal"
-            fullWidth
-            value={description}
+            id="capacity"
+            label="Capacity"
+            value={capacity}
             onChange={this.handleChange}
+            type="number"
+            fullWidth
             className="inputFields"
+            margin="normal"
           />
         </EditDialog>
       </div>
@@ -54,10 +54,10 @@ export default class TableAddDialog extends React.Component {
   handleSave() {
     const table = {};
     table.name = this.state.name;
-    table.description = this.state.description;
+    table.capacity = this.state.capacity;
     this.setState({
       name: "",
-      description: ""
+      capacity: ""
     });
     this.props.handleAddSave(table);
   }

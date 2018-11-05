@@ -69,7 +69,8 @@ class Tables extends Component {
         let item = {};
         item.name = tables[i].name;
         item.icon = tables[i].icon;
-        item.description = tables[i].description;
+        item.description =
+          "Capacity : " + (tables[i].capacity ? tables[i].capacity : 1);
         item.link = "#";
         item.id = tables[i].id;
         item.object = tables[i];

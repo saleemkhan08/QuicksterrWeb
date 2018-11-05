@@ -1,4 +1,4 @@
-const drawerWidth = 300;
+const drawerWidth = 240;
 export const styles = theme => ({
   actionBtn: {
     width: "35px",
@@ -61,10 +61,5 @@ export const styles = theme => ({
     justifyContent: "flex-end",
     padding: "0 8px",
     ...theme.mixins.toolbar
-  },
-  content: {
-    flexGrow: 1,
-    backgroundColor: theme.palette.background.default,
-    padding: theme.spacing.unit * 3
   }
 });

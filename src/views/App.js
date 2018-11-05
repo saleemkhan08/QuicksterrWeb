@@ -9,7 +9,7 @@ import { connect } from "react-redux";
 import { logoutUser, fetchUser } from "../actions/authActions";
 import Header from "../components/Header/Header";
 import HeaderLinks from "../components/Header/HeaderLinks";
-import Footer from "components/Footer/Footer";
+import Footer from "../components/Footer/Footer";
 import PropTypes from "prop-types";
 import MessagingComponent from "../components/MessagingComponent";
 import "./App.css";

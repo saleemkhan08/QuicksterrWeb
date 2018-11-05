@@ -24,7 +24,7 @@ export const DELETE_CATEGORIES = "DELETE_CATEGORIES";
 export const DELETE_CATEGORIES_BEGIN = "DELETE_CATEGORIES_BEGIN";
 export const DELETE_CATEGORIES_SUCCESS = "DELETE_CATEGORIES_SUCCESS";
 export const DELETE_CATEGORIES_ERROR = "DELETE_CATEGORIES_ERROR";
-
+export const RESET_MENU = "RESET_MENU";
 function getCategoryCollectionRef(restaurantId) {
   return firestore
     .collection(RESTAURANTS)
@@ -50,6 +50,10 @@ export function fetchCategories(restaurantId) {
 
 export const fetchCategoriesBegin = () => ({
   type: FETCH_CATEGORIES_BEGIN
+});
+
+export const resetMenu = () => ({
+  type: RESET_MENU
 });
 
 export const fetchCategoriesSuccess = categories => ({
@@ -142,11 +146,10 @@ export function deleteCategory(restaurantId, categoryId) {
 }
 
 export function addCategory(restaurantId, categoryName) {
-  const categoryRef = getCategoryCollectionRef(restaurantId).doc();
   const category = {};
   category.name = categoryName;
+  const categoryRef = getCategoryCollectionRef(restaurantId).doc();
   category.id = categoryRef.id;
-
   return new Promise((resolve, reject) => {
     categoryRef
       .set(category)
@@ -159,14 +162,14 @@ export function addCategory(restaurantId, categoryName) {
   });
 }
 
-export function deleteCategories(restaurantId, category) {
+export function deleteCategories(restaurantId, categoryId) {
   return dispatch => {
     dispatch(deleteCategoriesBegin());
     const categoryRef = firestore
       .collection(RESTAURANTS)
       .doc(restaurantId)
       .collection(CATEGORIES)
-      .doc(category.id);
+      .doc(categoryId);
     categoryRef
       .delete()
       .then(() => {
