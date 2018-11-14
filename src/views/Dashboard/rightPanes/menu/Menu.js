@@ -5,7 +5,7 @@ import {
   editDishes,
   deleteDishes
 } from "../../../../actions/dishesActions";
-import { MENU_ITEM_DETAILS } from "../../../../actions/authActions";
+import { MENU_ITEM_DETAILS } from "../../../../actions/navigationActions";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import CrudList from "../../../CrudList";
@@ -61,11 +61,10 @@ class Menu extends Component {
   }
 
   render() {
-    const { isAdmin } = this.props.authReducer;
+    const { isAdmin } = this.props.navigationReducer;
     const isCategoriesLoading = this.props.menuReducer.isLoading;
     let { isLoading, dishes } = this.props.dishReducer;
     const crudItems = this.getCrudItemsFromDishes(dishes);
-    console.log(">>>>>>>>>>>>>> crudItems : ", crudItems);
     return (
       <div>
         {!isCategoriesLoading || crudItems.length > 0 ? (
@@ -110,7 +109,7 @@ class Menu extends Component {
       for (let i = 0; i < dishes.length; i++) {
         let item = {};
         item.name = dishes[i].name;
-        item.icon = dishes[i].image;
+        item.icon = dishes[i].icon;
         item.description = dishes[i].description;
         item.link = "#";
         item.id = dishes[i].id;
@@ -182,7 +181,7 @@ Menu.propTypes = {
   menuReducer: PropTypes.object,
   orderReducer: PropTypes.object,
   heading: PropTypes.string,
-  authReducer: PropTypes.object
+  navigationReducer: PropTypes.object
 };
 
 const mapStateToProps = state => {
@@ -190,7 +189,7 @@ const mapStateToProps = state => {
     menuReducer: state.MenuReducer,
     dishReducer: state.DishesReducer,
     orderReducer: state.OrderReducer,
-    authReducer: state.AuthReducer
+    navigationReducer: state.NavigationReducer
   };
 };
 

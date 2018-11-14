@@ -18,9 +18,9 @@ import { styles } from "./DashboardStyle";
 import {
   changeMainContentType,
   CATEGORY_DETAILS
-} from "../../actions/authActions";
+} from "../../actions/navigationActions";
 import { connect } from "react-redux";
-import { sidebarLinks, MENU_DETAILS } from "../../actions/authActions";
+import { sidebarLinks, MENU_DETAILS } from "../../actions/navigationActions";
 
 class DrawerContent extends Component {
   constructor(props) {
@@ -80,7 +80,7 @@ class DrawerContent extends Component {
 
   sideBarItems() {
     return sidebarLinks.map(link => {
-      if (link.name === CATEGORY_DETAILS.name && !this.props.auth.isAdmin) {
+      if (link.name === CATEGORY_DETAILS.name && !this.props.navigation.isAdmin) {
         return "";
       }
       return this.showListItem(link, this.handleItemClick, "");
@@ -118,9 +118,7 @@ class DrawerContent extends Component {
   }
 
   handleItemClick(name) {
-    if (window.innerWidth < 600) {
-      this.setState({ expand: false, open: false });
-    }
+    this.setState({ expand: false, open: false });
     this.props.dispatch(changeMainContentType(name));
     this.setState({
       activeItem: name,
@@ -134,13 +132,13 @@ DrawerContent.propTypes = {
   theme: PropTypes.object.isRequired,
   dispatch: PropTypes.func,
   reducer: PropTypes.object,
-  auth: PropTypes.object
+  navigation: PropTypes.object
 };
 
 const mapStateToProps = state => {
   return {
     reducer: state.MenuReducer,
-    auth: state.AuthReducer
+    navigation: state.NavigationReducer
   };
 };
 

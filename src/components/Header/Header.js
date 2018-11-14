@@ -57,7 +57,7 @@ class Header extends React.Component {
   }
   render() {
     const { classes, brand, fixed, absolute } = this.props;
-    const color = this.props.auth.navbarColor;
+    const color = this.props.navigation.navbarColor;
     const appBarClasses = classNames({
       [classes.appBar]: true,
       [classes[color]]: color,
@@ -133,7 +133,7 @@ Header.propTypes = {
   restaurantId: PropTypes.string,
   fixed: PropTypes.bool,
   absolute: PropTypes.bool,
-  auth: PropTypes.object,
+  navigation: PropTypes.object,
   // this will cause the sidebar to change the color from
   // this.props.color (see above) to changeColorOnScroll.color
   // when the window.pageYOffset is heigher or equal to
@@ -158,7 +158,7 @@ Header.propTypes = {
 
 const mapStateToProps = state => {
   return {
-    auth: state.AuthReducer
+    navigation: state.NavigationReducer
   };
 };
 

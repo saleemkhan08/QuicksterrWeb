@@ -6,13 +6,15 @@ import RestaurantPage from "./RestaurantPage/RestaurantPage";
 import firebase from "firebase/app";
 import "firebase/auth";
 import { connect } from "react-redux";
-import { logoutUser, fetchUser } from "../actions/authActions";
+import { logoutUser, fetchUser } from "../actions/navigationActions";
 import Header from "../components/Header/Header";
 import HeaderLinks from "../components/Header/HeaderLinks";
 import Footer from "../components/Footer/Footer";
 import PropTypes from "prop-types";
 import MessagingComponent from "../components/MessagingComponent";
+import UploadImageDialog from "./UploadImageDialog";
 import "./App.css";
+
 class App extends Component {
   render() {
     return (
@@ -35,6 +37,7 @@ class App extends Component {
           </Switch>
           <Footer />
           <MessagingComponent />
+          <UploadImageDialog />
         </div>
       </BrowserRouter>
     );

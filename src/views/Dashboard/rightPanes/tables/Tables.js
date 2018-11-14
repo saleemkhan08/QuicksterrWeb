@@ -5,7 +5,7 @@ import {
   addTables,
   deleteTables
 } from "../../../../actions/tablesActions";
-import { TABLE_DETAILS } from "../../../../actions/authActions";
+import { TABLE_DETAILS } from "../../../../actions/navigationActions";
 import { connect } from "react-redux";
 import CRUDList from "../../../CrudList";
 import TableAddDialog from "./TableAddDialog";
@@ -45,6 +45,7 @@ class Tables extends Component {
           isLoading={this.props.reducer.isLoading}
           handleEdit={this.handleEdit}
           handleAdd={this.handleAdd}
+          showImgUploadBtn
           handleDelete={this.handleDelete}
         />
         <TableAddDialog

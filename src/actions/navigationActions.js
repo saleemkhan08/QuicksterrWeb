@@ -1,4 +1,3 @@
-import { firestore } from "../store";
 import chefs from "../assets/img/sidebar-icons/chefs.svg";
 import orders from "../assets/img/sidebar-icons/orders.svg";
 import tables from "../assets/img/sidebar-icons/tables.svg";
@@ -7,7 +6,7 @@ import notifications from "../assets/img/sidebar-icons/notifications.svg";
 import category from "../assets/img/sidebar-icons/category.svg";
 import menu from "../assets/img/sidebar-icons/menu.svg";
 import dish from "../assets/img/sidebar-icons/dishes.svg";
-
+import { firestore } from "../store";
 export const LOGIN_USER = "LOGIN_USER";
 export const LOGOUT_USER = "LOGOUT_USER";
 export const CHANGE_NAVBAR_COLOR = "CHANGE_NAVBAR_COLOR";
@@ -17,6 +16,7 @@ export const RESTAURANT_ID = "restaurantId";
 export const TYPE = "type";
 export const CHANGE_MAIN_CONTENT_TYPE = "CHANGE_MAIN_CONTENT_TYPE";
 export const SET_ADMIN_STATUS = "SET_ADMIN_STATUS";
+
 export const RESTAURANT_DETAILS = {
   name: "Restaurants",
   type: "RESTAURANT_DETAILS",
@@ -98,6 +98,12 @@ export const NOTIFICATION_DETAILS = {
   type: "NOTIFICATION_DETAILS",
   icon: notifications,
   emptyListMsg: "You have no notifications!"
+};
+
+export const IMAGES_DETAILS = {
+  emptyListMsg: "No Images found!",
+  deleteConfirmMsgStart: "Are you sure you want to delete this image?",
+  type: "IMAGES_DETAILS"
 };
 
 export const RESTAURANT_ADMIN = "restaurantAdmin";

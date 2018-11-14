@@ -1,18 +1,20 @@
 import React, { Component } from "react";
 import EditIcon from "@material-ui/icons/Edit";
 import ClearIcon from "@material-ui/icons/Clear";
+import CameraAlt from "@material-ui/icons/CameraAlt";
 import { withStyles } from "@material-ui/core/styles";
 import AddIcon from "@material-ui/icons/Add";
 import Paper from "@material-ui/core/Paper";
 import GridContainer from "../components/Grid/GridContainer";
 import GridItem from "../components/Grid/GridItem";
 import styles from "./Dashboard/rightPanes/styles";
-import { IconButton } from "@material-ui/core";
+import { IconButton, CircularProgress } from "@material-ui/core";
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import MenuItemCard from "../views/Dashboard/rightPanes/menu/MenuItemCard";
 import OrderItemCard from "../views/Dashboard/rightPanes/orders/OrderItemCard";
+import { RESTAURANTS } from "../actions/restaurantActions";
 import {
   CircularLoading,
   CenteredText
@@ -21,14 +23,21 @@ import DeleteDialog from "../components/dialogs/DeleteDialog";
 import {
   RESTAURANT_DETAILS,
   MENU_ITEM_DETAILS,
-  ORDER_DETAILS
-} from "../actions/authActions";
+  ORDER_DETAILS,
+  NOTIFICATION_DETAILS,
+  TABLE_DETAILS,
+  CATEGORY_DETAILS,
+  IMAGES_DETAILS
+} from "../actions/navigationActions";
+import { openImageUploadDialog } from "../actions/imagesActions";
 import Button from "@material-ui/core/Button";
-
+import { TABLES } from "../actions/tablesActions";
+import { CATEGORIES } from "../actions/menuActions";
 class CRUDList extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      openUploadImgDialog: false,
       openDialog: false,
       deleteAlertMsg: "",
       name: "",
@@ -38,21 +47,16 @@ class CRUDList extends Component {
     this.handleDeleteAccepted = this.handleDeleteAccepted.bind(this);
     this.handleDeleteClick = this.handleDeleteClick.bind(this);
   }
-  componentDidUpdate() {
-    const { isAdmin } = this.props.auth;
-    if (isAdmin !== this.state.showAdminOptions) {
-      this.setState({
-        showAdminOptions: isAdmin
-      });
-    }
-  }
   render() {
-    const { items, detail, reducer } = this.props;
+    const { items, detail, reducer, showUploadingCard } = this.props;
     return (
       <div>
         {this.getBreadCrumb(detail, reducer)}
-        <GridContainer>{this.showRows(items, detail)}</GridContainer>
-        {this.state.showAdminOptions ? (
+        <GridContainer>
+          {this.getLoadingCard(showUploadingCard, "Uploading...")}
+          {this.showRows(items, detail)}
+        </GridContainer>
+        {this.props.navigation.isAdmin ? (
           <DeleteDialog
             openDialog={this.state.openDialog}
             handleClose={this.handleClose}
@@ -67,7 +71,11 @@ class CRUDList extends Component {
   }
 
   getBreadCrumb(detail, reducer) {
-    if (this.props.isLoading || this.props.reducer.isCurrentRestaurantLoading) {
+    if (
+      this.props.hideBreadCrumb ||
+      this.props.isLoading ||
+      this.props.reducer.isCurrentRestaurantLoading
+    ) {
       return "";
     }
     return (
@@ -88,7 +96,12 @@ class CRUDList extends Component {
   }
 
   getBreadCrumbTitle(detail, reducer) {
-    if (detail.name === RESTAURANT_DETAILS.name) {
+    if (detail.name === undefined) {
+      return "";
+    } else if (
+      detail.name === RESTAURANT_DETAILS.name ||
+      detail.name === NOTIFICATION_DETAILS.name
+    ) {
       return detail.name;
     } else if (reducer.currentRestaurant) {
       const restaurantName = reducer.currentRestaurant.name;
@@ -105,7 +118,7 @@ class CRUDList extends Component {
   }
 
   getAddButton() {
-    if (this.state.showAdminOptions && !this.props.hideAddBtn) {
+    if (this.props.navigation.isAdmin && !this.props.hideAddBtn) {
       return (
         <Button
           variant="outlined"
@@ -122,7 +135,7 @@ class CRUDList extends Component {
   }
 
   handleClose = () => {
-    this.setState({ openDialog: false });
+    this.setState({ openDialog: false, objectDeleted: undefined });
   };
 
   handleDeleteAccepted() {
@@ -131,16 +144,17 @@ class CRUDList extends Component {
   }
 
   handleDeleteClick(item) {
+    let deleteMsg = this.props.detail.deleteConfirmMsgStart;
+    if (this.props.detail.deleteConfirmMsgEnd) {
+      deleteMsg += item.name + this.props.detail.deleteConfirmMsgEnd;
+    }
     if (this.props.detail.deleteConfirmMsgStart) {
       this.setState({
         name: item.name,
         key: item.id,
         objectDeleted: item.object,
         openDialog: true,
-        deleteAlertMsg:
-          this.props.detail.deleteConfirmMsgStart +
-          item.name +
-          this.props.detail.deleteConfirmMsgEnd
+        deleteAlertMsg: deleteMsg
       });
     } else {
       this.props.handleDelete(this.state.objectDeleted);
@@ -148,7 +162,11 @@ class CRUDList extends Component {
   }
 
   showRows(items, detail) {
-    if (this.props.isLoading || this.props.reducer.isCurrentRestaurantLoading) {
+    if (
+      this.props.isLoading ||
+      this.props.reducer.isCurrentRestaurantLoading ||
+      items === undefined
+    ) {
       return <CircularLoading />;
     } else if (items.length > 0) {
       return items.map(item => {
@@ -160,7 +178,7 @@ class CRUDList extends Component {
                 item={item}
                 handleDeleteClick={this.handleDeleteClick}
                 handleEdit={this.props.handleEdit}
-                showAdminOptions={this.state.showAdminOptions}
+                showAdminOptions={this.props.navigation.isAdmin}
               />
             );
           case ORDER_DETAILS.type:
@@ -184,36 +202,128 @@ class CRUDList extends Component {
   getCard(item) {
     const icon = item.icon ? item.icon : this.props.detail.icon;
     const link = item.link ? item.link : "#";
+    if (this.state.objectDeleted && this.state.objectDeleted.id === item.id) {
+      return this.getLoadingCard(true, "Deleting...");
+    }
     return (
       <GridItem xs={12} sm={6} md={4} key={item.id}>
         <div>
           <Paper className="default-card">
             {this.getAdminOptions(item)}
-
-            <Link to={link} onClick={() => this.onLinkClick(item)}>
-              <div className="default-container">
-                <div className="default-cardImg-container">
-                  <img src={icon} alt="..." className="default-cardImg" />
-                </div>
-
-                <div className="default-textContainer">
+            <div className="default-container">
+              <div className="default-cardImg-container">
+                {icon.includes(".svg") ? (
+                  <img
+                    src={icon}
+                    alt="..."
+                    className="default-cardImg-contain"
+                    onClick={() => this.onLinkClick(item)}
+                  />
+                ) : (
+                  <img
+                    src={icon}
+                    alt="..."
+                    className="default-cardImg"
+                    onClick={() => this.onLinkClick(item)}
+                  />
+                )}
+                {this.showImgUploadBtn(item)}
+              </div>
+              <Link to={link} className="default-link">
+                <div
+                  className="default-textContainer"
+                  onClick={() => this.onLinkClick(item)}
+                >
                   <p className="default-cardHeading">{item.name}</p>
                   <p className="default-cardDescription">{item.description}</p>
                 </div>
-              </div>
-            </Link>
+              </Link>
+            </div>
           </Paper>
         </div>
       </GridItem>
     );
   }
+
+  getLoadingCard(loading, text) {
+    if (loading) {
+      return (
+        <GridItem xs={12} sm={6} md={4}>
+          <div>
+            <Paper className="default-card">
+              <div className="default-container">
+                <div className="default-loading-container">
+                  <div className="default-loading-inner-container">
+                    <CircularProgress className="default-loading" />
+                    <h5 className="default-loading-text">{text}</h5>
+                  </div>
+                </div>
+              </div>
+            </Paper>
+          </div>
+        </GridItem>
+      );
+    }
+  }
+
+  showImgUploadBtn = item => {
+    if (this.props.navigation.isAdmin && this.props.showImgUploadBtn) {
+      return (
+        <IconButton
+          className="img-upload-btn"
+          onClick={() => {
+            let keywords = "Abstract";
+            let refPath = undefined;
+            switch (this.props.detail.type) {
+              case RESTAURANT_DETAILS.type:
+                keywords = "Restaurant Logo";
+                refPath = RESTAURANTS + "/" + item.id;
+                break;
+              case TABLE_DETAILS.type: {
+                const { restaurantId } = this.props.reducer.currentRestaurant;
+                keywords = "Table Image";
+                refPath =
+                  RESTAURANTS +
+                  "/" +
+                  restaurantId +
+                  "/" +
+                  TABLES +
+                  "/" +
+                  item.id;
+                break;
+              }
+              case CATEGORY_DETAILS.type: {
+                const { restaurantId } = this.props.reducer.currentRestaurant;
+                refPath =
+                  RESTAURANTS +
+                  "/" +
+                  restaurantId +
+                  "/" +
+                  CATEGORIES +
+                  "/" +
+                  item.id;
+                keywords = item.name;
+                break;
+              }
+            }
+            this.props.dispatch(openImageUploadDialog(keywords, refPath));
+          }}
+        >
+          <CameraAlt />
+        </IconButton>
+      );
+    }
+  };
   onLinkClick = item => {
-    if (this.props.detail.name === RESTAURANT_DETAILS.name) {
-      this.props.onLinkClick(item.id);
+    switch (this.props.detail.name) {
+      case RESTAURANT_DETAILS.name:
+      case IMAGES_DETAILS.name:
+        this.props.onLinkClick(item);
+        break;
     }
   };
   getAdminOptions(item) {
-    if (this.state.showAdminOptions) {
+    if (this.props.navigation.isAdmin) {
       return (
         <div>
           <IconButton className="default-closeBtn" size="small">
@@ -240,6 +350,7 @@ class CRUDList extends Component {
 }
 
 CRUDList.propTypes = {
+  showUploadingCard: PropTypes.bool,
   items: PropTypes.array,
   detail: PropTypes.object,
   handleEdit: PropTypes.func,
@@ -248,17 +359,20 @@ CRUDList.propTypes = {
   handleDelete: PropTypes.func,
   handleAdd: PropTypes.func,
   reducer: PropTypes.object,
-  auth: PropTypes.object,
+  navigation: PropTypes.object,
   children: PropTypes.node,
   hideAddBtn: PropTypes.bool,
   onLinkClick: PropTypes.func,
-  horizontal: PropTypes.bool
+  horizontal: PropTypes.bool,
+  dispatch: PropTypes.func,
+  showImgUploadBtn: PropTypes.bool,
+  hideBreadCrumb: PropTypes.bool
 };
 
 const mapStateToProps = state => {
   return {
     reducer: state.RestaurantReducer,
-    auth: state.AuthReducer
+    navigation: state.NavigationReducer
   };
 };
 

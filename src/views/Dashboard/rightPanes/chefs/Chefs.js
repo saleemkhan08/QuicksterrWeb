@@ -6,7 +6,7 @@ import {
   addChefs,
   deleteChefs
 } from "../../../../actions/chefsActions";
-import { CHEF_DETAILS } from "../../../../actions/authActions";
+import { CHEF_DETAILS } from "../../../../actions/navigationActions";
 import { connect } from "react-redux";
 import AddChefDialog from "./AddChefDialog";
 

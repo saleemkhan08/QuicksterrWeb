@@ -4,7 +4,7 @@ import { fetchCategories } from "../../../../actions/menuActions";
 import { connect } from "react-redux";
 import CRUDList from "../../../CrudList";
 
-import { CATEGORY_DETAILS } from "../../../../actions/authActions";
+import { CATEGORY_DETAILS } from "../../../../actions/navigationActions";
 import {
   addCategories,
   editCategories,
@@ -45,13 +45,14 @@ class Category extends Component {
           handleEdit={this.handleEdit}
           handleAdd={this.handleAdd}
           handleDelete={this.handleDelete}
+          showImgUploadBtn
         />
         {this.addAdminOptionsDialogs()}
       </div>
     );
   }
   addAdminOptionsDialogs() {
-    if (this.props.authReducer.isAdmin)
+    if (this.props.navigationReducer.isAdmin)
       return (
         <div>
           <AddCategoryDialog
@@ -130,13 +131,13 @@ Category.propTypes = {
   dispatch: PropTypes.func,
   menuReducer: PropTypes.object,
   heading: PropTypes.string,
-  authReducer: PropTypes.object,
+  navigationReducer: PropTypes.object,
   restaurantReducer: PropTypes.object
 };
 const mapStateToProps = state => {
   return {
     menuReducer: state.MenuReducer,
-    authReducer: state.AuthReducer,
+    navigationReducer: state.NavigationReducer,
     restaurantReducer: state.RestaurantReducer
   };
 };

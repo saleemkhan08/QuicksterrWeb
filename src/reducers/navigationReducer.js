@@ -5,9 +5,9 @@ import {
   CHANGE_NAVBAR_COLOR,
   CHANGE_MAIN_CONTENT_TYPE,
   SET_ADMIN_STATUS
-} from "../actions/authActions";
+} from "../actions/navigationActions";
 
-const AuthReducer = (state = initialState, action) => {
+const NavigationReducer = (state = initialState, action) => {
   switch (action.type) {
     case LOGIN_USER:
       return {
@@ -58,4 +58,4 @@ const initialState = {
   isAdmin: false
 };
 
-export default AuthReducer;
+export default NavigationReducer;

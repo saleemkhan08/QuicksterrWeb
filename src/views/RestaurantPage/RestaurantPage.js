@@ -15,11 +15,12 @@ import {
 import {
   changeNavbarColor,
   RESTAURANT_DETAILS
-} from "../../actions/authActions";
+} from "../../actions/navigationActions";
 import CRUDList from "../CrudList";
 import { SearchBar } from "../../components/Centered/CenteredUtils";
 import RestaurantEditDialog from "./RestaurantEditDialog";
 import RestaurantAddDialog from "./RestaurantAddDialog";
+import { setAdminStatus, MASTER_ADMIN } from "../../actions/navigationActions";
 class RestaurantPage extends React.Component {
   constructor(props) {
     super(props);
@@ -42,14 +43,22 @@ class RestaurantPage extends React.Component {
       this.props.dispatch(fetchRestaurants());
     }
     this.props.dispatch(hideCategoriesTabs());
-    if (this.props.auth.navbarColor !== "white") {
+    if (this.props.navigation.navbarColor !== "white") {
       this.props.dispatch(changeNavbarColor("white"));
     }
   }
 
   render() {
     const { isLoading } = this.props.reducer;
-    const { restaurants } = this.props.reducer.restaurants;
+    const { restaurants } = this.props.reducer;
+    //set admin status
+    const { user, isAdmin } = this.props.navigation;
+    if (user) {
+      const isAdminTemp = user.type === MASTER_ADMIN;
+      if (isAdminTemp !== isAdmin) {
+        this.props.dispatch(setAdminStatus(isAdminTemp));
+      }
+    }
     const crudItems = this.getCrudItemsFromRestaurants(restaurants);
     return (
       <div>
@@ -64,6 +73,7 @@ class RestaurantPage extends React.Component {
             handleDelete={this.handleDelete}
             onLinkClick={this.handleLinkClick}
             horizontal
+            showImgUploadBtn
           />
           <RestaurantAddDialog
             open={this.state.openAddDialog}
@@ -80,8 +90,8 @@ class RestaurantPage extends React.Component {
       </div>
     );
   }
-  handleLinkClick = restaurantId => {
-    this.props.dispatch(fetchCurrentRestaurant(restaurantId));
+  handleLinkClick = restaurant => {
+    this.props.dispatch(fetchCurrentRestaurant(restaurant.id));
   };
 
   handleAdd() {
@@ -148,7 +158,7 @@ class RestaurantPage extends React.Component {
 }
 
 RestaurantPage.propTypes = {
-  auth: PropTypes.object,
+  navigation: PropTypes.object,
   dispatch: PropTypes.func,
   reducer: PropTypes.object
 };
@@ -156,7 +166,7 @@ RestaurantPage.propTypes = {
 const mapStateToProps = state => {
   return {
     reducer: state.RestaurantReducer,
-    auth: state.AuthReducer
+    navigation: state.NavigationReducer
   };
 };
 

@@ -41,7 +41,7 @@ import {
 import { from } from "rxjs/observable/from";
 import { map } from "rxjs/operators";
 import { async } from "rxjs/scheduler/async";
-import { MENU_DETAILS } from "../../../../actions/authActions";
+import { MENU_DETAILS } from "../../../../actions/navigationActions";
 import DeleteDialog from "../../../../components/dialogs/DeleteDialog";
 
 const IMPORTING = "Importing...";

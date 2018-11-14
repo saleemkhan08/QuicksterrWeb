@@ -5,7 +5,7 @@ import {
   addWaiters,
   deleteWaiters
 } from "../../../../actions/waitersActions";
-import { WAITER_DETAILS } from "../../../../actions/authActions";
+import { WAITER_DETAILS } from "../../../../actions/navigationActions";
 import { connect } from "react-redux";
 import CRUDList from "../../../CrudList";
 import AddWaiterDialog from "./AddWaiterDialog";

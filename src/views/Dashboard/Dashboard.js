@@ -26,7 +26,7 @@ import {
   NOTIFICATION_DETAILS,
   MASTER_ADMIN,
   RESTAURANT_ADMIN
-} from "../../actions/authActions";
+} from "../../actions/navigationActions";
 import { fetchChefs } from "../../actions/chefsActions";
 import { fetchCategories, resetMenu } from "../../actions/menuActions";
 import { fetchCurrentRestaurant } from "../../actions/restaurantActions";
@@ -35,7 +35,7 @@ import { fetchWaiters } from "../../actions/waitersActions";
 class Dashboard extends React.Component {
   componentDidMount() {
     //Changing the navbar color
-    if (this.props.auth.navbarColor !== "white") {
+    if (this.props.navigation.navbarColor !== "white") {
       this.props.dispatch(changeNavbarColor("white"));
     }
     //setting the current restaurant
@@ -57,9 +57,8 @@ class Dashboard extends React.Component {
   render() {
     const { classes } = this.props;
     const { restaurantId } = this.props.match.params;
-    console.log(">>>>>>>>>> restaurantId: ", restaurantId);
     //set admin status
-    const { user, isAdmin } = this.props.auth;
+    const { user, isAdmin } = this.props.navigation;
     if (user) {
       const isAdminTemp =
         user.type === MASTER_ADMIN ||
@@ -73,7 +72,10 @@ class Dashboard extends React.Component {
         <DrawerContent />
         <main className="content">
           <div className={classes.toolbar} />
-          {this.showRightPane(this.props.auth.mainContentType, restaurantId)}
+          {this.showRightPane(
+            this.props.navigation.mainContentType,
+            restaurantId
+          )}
         </main>
       </div>
     );
@@ -103,14 +105,14 @@ class Dashboard extends React.Component {
 Dashboard.propTypes = {
   classes: PropTypes.object.isRequired,
   theme: PropTypes.object.isRequired,
-  auth: PropTypes.object.isRequired,
+  navigation: PropTypes.object.isRequired,
   dispatch: PropTypes.func,
   match: PropTypes.object
 };
 
 const mapStateToProps = state => {
   return {
-    auth: state.AuthReducer
+    navigation: state.NavigationReducer
   };
 };
 export default connect(mapStateToProps)(

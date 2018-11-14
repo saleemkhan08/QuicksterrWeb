@@ -26,13 +26,13 @@ export class HeaderLinks extends Component {
   }
 
   render() {
-    const { classes, auth, order } = this.props;
+    const { classes, navigation, order } = this.props;
     const showMainPageLinks = ["/"].includes(window.location.pathname);
     return (
       <div>
         <List className={classes.list}>
           {this.getOrdersLink(classes, order)}
-          {this.getUserOptions(classes, auth)}
+          {this.getUserOptions(classes, navigation)}
           {showMainPageLinks
             ? this.getHrefLink(classes, "About", "/#about")
             : ""}
@@ -42,9 +42,9 @@ export class HeaderLinks extends Component {
           {showMainPageLinks
             ? this.getHrefLink(classes, "Contact", "/#contact")
             : ""}
-          {auth.isLoggedIn
-            ? this.getLogoutLink(classes, auth)
-            : this.getLoginLink(classes, auth)}
+          {navigation.isLoggedIn
+            ? this.getLogoutLink(classes, navigation)
+            : this.getLoginLink(classes, navigation)}
         </List>
         <CurrentOrdersDialog
           open={this.state.open}
@@ -97,15 +97,15 @@ export class HeaderLinks extends Component {
     );
   };
 
-  getUserOptions = (classes, auth) => {
-    if (auth.isLoggedIn && auth.user) {
-      return dashboardUserList.includes(auth.user.type) ||
-        !auth.user.restaurantId
+  getUserOptions = (classes, navigation) => {
+    if (navigation.isLoggedIn && navigation.user) {
+      return dashboardUserList.includes(navigation.user.type) ||
+        !navigation.user.restaurantId
         ? this.getLink(classes, "Restaurants", "/restaurants")
         : this.getLink(
             classes,
             "Dashboard",
-            "/dashboard/" + auth.user.restaurantId
+            "/dashboard/" + navigation.user.restaurantId
           );
     }
   };
@@ -120,22 +120,26 @@ export class HeaderLinks extends Component {
     );
   };
 
-  getLoginLink = (classes, auth) => {
+  getLoginLink = (classes, navigation) => {
     return (
       <ListItem className={classes.listItem}>
         <Link
           to=""
           className={classes.navLink}
-          onClick={() => this.loginWithGoogle(auth)}
+          onClick={() => this.loginWithGoogle(navigation)}
         >
-          {auth.isLoggingLoading ? <CircularProgress size={20} /> : "LOGIN"}
+          {navigation.isLoggingLoading ? (
+            <CircularProgress size={20} />
+          ) : (
+            "LOGIN"
+          )}
         </Link>
       </ListItem>
     );
   };
 
-  loginWithGoogle = auth => {
-    if (!auth.isLoggingLoading) {
+  loginWithGoogle = navigation => {
+    if (!navigation.isLoggingLoading) {
       const provider = new firebase.auth.GoogleAuthProvider();
       firebase.auth().signInWithRedirect(provider);
     }
@@ -157,14 +161,14 @@ export class HeaderLinks extends Component {
 }
 const mapStateToProps = state => {
   return {
-    auth: state.AuthReducer,
+    navigation: state.NavigationReducer,
     order: state.OrderReducer
   };
 };
 
 HeaderLinks.propTypes = {
   classes: PropTypes.object,
-  auth: PropTypes.object,
+  navigation: PropTypes.object,
   order: PropTypes.object,
   dispatch: PropTypes.func
 };

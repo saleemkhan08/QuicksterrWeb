@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { fetchCategories } from "../../../../actions/menuActions";
 import { connect } from "react-redux";
 import CRUDList from "../../../CrudList";
-import { NOTIFICATION_DETAILS } from "../../../../actions/authActions";
+import { NOTIFICATION_DETAILS } from "../../../../actions/navigationActions";
 
 class Orders extends Component {
   componentDidMount() {
@@ -17,6 +17,8 @@ class Orders extends Component {
         items={categories}
         detail={NOTIFICATION_DETAILS}
         isLoading={isLoading}
+        hideAddBtn
+        hideEdit
       />
     );
   }

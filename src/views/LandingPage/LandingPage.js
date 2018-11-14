@@ -18,13 +18,13 @@ import landingPageStyle from "../../assets/jss/material-kit-react/views/landingP
 import ProductSection from "./Sections/ProductSection.jsx";
 import TeamSection from "./Sections/TeamSection.jsx";
 import WorkSection from "./Sections/WorkSection.jsx";
-import { changeNavbarColor } from "../../actions/authActions";
+import { changeNavbarColor } from "../../actions/navigationActions";
 import { connect } from "react-redux";
 import { hideCategoriesTabs } from "../../actions/menuActions";
 import PropTypes from "prop-types";
 class LandingPage extends React.Component {
   componentDidMount() {
-    if (this.props.auth.navbarColor !== "transparent") {
+    if (this.props.navigation.navbarColor !== "transparent") {
       this.props.dispatch(changeNavbarColor("transparent"));
     }
     this.props.dispatch(hideCategoriesTabs());
@@ -70,12 +70,12 @@ class LandingPage extends React.Component {
 LandingPage.propTypes = {
   dispatch: PropTypes.func,
   classes: PropTypes.object,
-  auth: PropTypes.object
+  navigation: PropTypes.object
 };
 
 const mapStateToProps = state => {
   return {
-    auth: state.AuthReducer
+    navigation: state.NavigationReducer
   };
 };
 

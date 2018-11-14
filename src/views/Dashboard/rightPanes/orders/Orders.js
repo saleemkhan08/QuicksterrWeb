@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { ORDER_DETAILS } from "../../../../actions/authActions";
+import { ORDER_DETAILS } from "../../../../actions/navigationActions";
 import { connect } from "react-redux";
 import CRUDList from "../../../CrudList";
 import {

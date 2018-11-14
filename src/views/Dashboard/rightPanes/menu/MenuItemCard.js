@@ -1,5 +1,7 @@
 import React, { Component } from "react";
-import { MENU_ITEM_DETAILS } from "../../../../actions/authActions";
+import { MENU_ITEM_DETAILS } from "../../../../actions/navigationActions";
+import { openImageUploadDialog } from "../../../../actions/imagesActions";
+import CameraAlt from "@material-ui/icons/CameraAlt";
 import GridItem from "../../../../components/Grid/GridItem";
 import PropTypes from "prop-types";
 import Paper from "@material-ui/core/Paper";
@@ -13,6 +15,8 @@ import Button from "@material-ui/core/Button";
 import order from "../../../../assets/img/sidebar-icons/orders.svg";
 import "./MenuStyle.css";
 import { connect } from "react-redux";
+import { RESTAURANTS } from "../../../../actions/restaurantActions";
+import { CATEGORIES } from "../../../../actions/menuActions";
 import {
   addItemToOrder,
   openTableAndUserSetter,
@@ -21,16 +25,35 @@ import {
   CLEAR_CURRENT_ORDERS
 } from "../../../../actions/ordersActions";
 import { showMessage } from "../../../../actions/messageActions";
-
+import veg from "../../../../assets/img/veg.svg";
+import nonVeg from "../../../../assets/img/nonVeg.svg";
+import { DISHES } from "../../../../actions/dishesActions";
 export class MenuItemCard extends Component {
   render() {
     const { item } = this.props;
     const icon = item.icon ? item.icon : MENU_ITEM_DETAILS.icon;
+    const { currentCategory } = this.props.menu;
     return (
       <GridItem xs={12} sm={6} md={4} lg={3}>
         <Paper className="menuCardContainer">
           {this.getAdminOptions(item)}
-          <img alt="" className="menuItemImg" src={icon} />
+          <img
+            alt=""
+            className="veg-symbol"
+            src={item.object.veg === "Y" ? veg : nonVeg}
+          />
+          <div className="menu-img-container">
+            {this.showImgUploadBtn(
+              item.name + ", " + currentCategory.name,
+              item.id,
+              currentCategory.id
+            )}
+            {icon.includes(".svg") ? (
+              <img alt="" className="menuItemImgContain" src={icon} />
+            ) : (
+              <img alt="" className="menuItemImg" src={icon} />
+            )}
+          </div>
           <h5 className="cardHeading">{item.name}</h5>
           <p className="cardDescription">{item.description}</p>
           <Divider className="divider" />
@@ -82,6 +105,34 @@ export class MenuItemCard extends Component {
       </div>
     );
   }
+
+  showImgUploadBtn = (keywords, id, catId) => {
+    if (this.props.showAdminOptions) {
+      const { restaurantId } = this.props.restaurant.currentRestaurant;
+      const refPath =
+        RESTAURANTS +
+        "/" +
+        restaurantId +
+        "/" +
+        CATEGORIES +
+        "/" +
+        catId +
+        "/" +
+        DISHES +
+        "/" +
+        id;
+      return (
+        <IconButton
+          className="menu-img-upload-btn"
+          onClick={() => {
+            this.props.dispatch(openImageUploadDialog(keywords, refPath));
+          }}
+        >
+          <CameraAlt />
+        </IconButton>
+      );
+    }
+  };
 
   addItemToOrder = currentOrderList => {
     const { currentOrderRestaurant, table } = this.props.order;
@@ -138,13 +189,15 @@ MenuItemCard.propTypes = {
   showAdminOptions: PropTypes.bool,
   dispatch: PropTypes.func,
   order: PropTypes.object,
-  restaurant: PropTypes.object
+  restaurant: PropTypes.object,
+  menu: PropTypes.object
 };
 
 const mapStateToProps = state => {
   return {
     order: state.OrderReducer,
-    restaurant: state.RestaurantReducer
+    restaurant: state.RestaurantReducer,
+    menu: state.MenuReducer
   };
 };
 

@@ -1,5 +1,5 @@
 import { firestore } from "../store";
-import { USERS, RESTAURANT_ID, TYPE } from "./authActions";
+import { USERS, RESTAURANT_ID, TYPE } from "./navigationActions";
 export const WAITERS = "waiter";
 
 export const ADD_WAITERS = "ADD_WAITERS";

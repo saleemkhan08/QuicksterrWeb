@@ -38,12 +38,12 @@ const RestaurantReducer = (state = initialState, action) => {
         ...state,
         isCurrentRestaurantLoading: true
       };
-
     case FETCH_RESTAURANTS_SUCCESS:
       return {
         ...state,
         isLoading: false,
-        restaurants: action.payload
+        restaurants: action.payload,
+        isCurrentRestaurantLoading: false
       };
     case FETCH_CURRENT_RESTAURANT_SUCCESS:
       return {

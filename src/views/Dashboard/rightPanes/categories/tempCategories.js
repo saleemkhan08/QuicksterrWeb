@@ -7,7 +7,7 @@ import CRUDList from "../../../CrudList";
 import {
   CATEGORY_DETAILS,
   MENU_DETAILS
-} from "../../../../actions/authActions";
+} from "../../../../actions/navigationActions";
 import InputIcon from "@material-ui/icons/Input";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Button from "@material-ui/core/Button";
@@ -128,7 +128,7 @@ class Category extends Component {
   }
 
   showImportButton() {
-    if (this.props.authReducer.isAdmin)
+    if (this.props.navigationReducer.isAdmin)
       return (
         <div className="import-btn-outer-container">
           <ReactFileReader handleFiles={this.handleImport} fileTypes={".csv"}>
@@ -374,13 +374,13 @@ Category.propTypes = {
   dispatch: PropTypes.func,
   menuReducer: PropTypes.object,
   heading: PropTypes.string,
-  authReducer: PropTypes.object,
+  navigationReducer: PropTypes.object,
   restaurantReducer: PropTypes.object
 };
 const mapStateToProps = state => {
   return {
     menuReducer: state.MenuReducer,
-    authReducer: state.AuthReducer,
+    navigationReducer: state.NavigationReducer,
     restaurantReducer: state.RestaurantReducer
   };
 };

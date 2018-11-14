@@ -68,7 +68,7 @@ export const fetchRestaurantsBegin = () => ({
 
 export const fetchRestaurantsSuccess = restaurants => ({
   type: FETCH_RESTAURANTS_SUCCESS,
-  payload: { restaurants }
+  payload: restaurants
 });
 
 export const fetchRestaurantsError = error => ({
