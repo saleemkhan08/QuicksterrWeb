@@ -4,7 +4,7 @@ import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import "./dialogs.css";
-
+import PropTypes from "prop-types";
 export default class EditDialog extends React.Component {
   render() {
     return (
@@ -29,3 +29,12 @@ export default class EditDialog extends React.Component {
     );
   }
 }
+
+EditDialog.propTypes = {
+  heading: PropTypes.string,
+  children: PropTypes.node,
+  handleCancel: PropTypes.func,
+  handleSave: PropTypes.func,
+  open: PropTypes.bool,
+  hideSave: PropTypes.bool
+};

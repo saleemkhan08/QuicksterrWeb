@@ -4,7 +4,8 @@ import {
   FETCH_USER,
   CHANGE_NAVBAR_COLOR,
   CHANGE_MAIN_CONTENT_TYPE,
-  SET_ADMIN_STATUS
+  SET_ADMIN_STATUS,
+  USERS_FETCH_SUCCESS
 } from "../actions/navigationActions";
 
 const NavigationReducer = (state = initialState, action) => {
@@ -44,6 +45,11 @@ const NavigationReducer = (state = initialState, action) => {
         ...state,
         isAdmin: action.payload
       };
+    case USERS_FETCH_SUCCESS:
+      return {
+        ...state,
+        users: action.payload
+      };
     default:
       return state;
   }
@@ -55,7 +61,8 @@ const initialState = {
   user: null,
   navbarColor: "white",
   mainContentType: "Menu",
-  isAdmin: false
+  isAdmin: false,
+  users: []
 };
 
 export default NavigationReducer;

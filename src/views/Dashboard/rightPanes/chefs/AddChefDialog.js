@@ -1,24 +1,36 @@
 import React from "react";
 import EditDialog from "../../../../components/dialogs/EditDialog";
-import TextField from "@material-ui/core/TextField";
 import PropTypes from "prop-types";
-export default class AddChefDialog extends React.Component {
+import IntegratedReactSelect from "../../../IntegratedReactSelect";
+import { connect } from "react-redux";
+import { fetchUsers } from "../../../../actions/navigationActions";
+class AddChefDialog extends React.Component {
   constructor(props) {
     super(props);
     this.handleSave = this.handleSave.bind(this);
     this.handleCancel = this.handleCancel.bind(this);
     this.state = {
-      email: ""
+      email: "",
+      suggestions: []
     };
   }
-
-  handleChange = event => {
-    this.setState({
-      [event.target.id]: event.target.value
-    });
-  };
+  componentDidMount() {
+    this.props.dispatch(fetchUsers());
+  }
   render() {
-    const { email } = this.state;
+    const { users } = this.props.navigationReducer;
+    const labledUsers = [];
+    if (users) {
+      const uids = Object.keys(users);
+      uids.forEach(uid => {
+        const user = users[uid];
+        labledUsers.push({
+          label: user.email,
+          value: user.email
+        });
+      });
+    }
+
     return (
       <div>
         <EditDialog
@@ -27,26 +39,29 @@ export default class AddChefDialog extends React.Component {
           handleSave={this.handleSave}
           handleCancel={this.handleCancel}
         >
-          <TextField
-            id="email"
+          <IntegratedReactSelect
             label="Chef's Email ID"
-            margin="normal"
-            fullWidth
-            value={email}
-            onChange={this.handleChange}
-            className="inputFields"
+            onChange={str => this.updateList(str)}
+            suggestions={labledUsers}
           />
         </EditDialog>
       </div>
     );
   }
+
   handleSave() {
+    console.log("handleSave : email : ", this.state.email);
     this.props.handleAddSave(this.state.email);
     this.setState({
       email: ""
     });
   }
-
+  updateList = email => {
+    console.log("updateList : email : ", email);
+    this.setState({
+      email: email
+    });
+  };
   handleCancel() {
     this.props.handleCancel();
   }
@@ -55,5 +70,15 @@ export default class AddChefDialog extends React.Component {
 AddChefDialog.propTypes = {
   handleCancel: PropTypes.func,
   handleAddSave: PropTypes.func,
-  open: PropTypes.bool
+  open: PropTypes.bool,
+  dispatch: PropTypes.func,
+  navigationReducer: PropTypes.object
 };
+
+const mapStateToProps = state => {
+  return {
+    navigationReducer: state.NavigationReducer
+  };
+};
+
+export default connect(mapStateToProps)(AddChefDialog);

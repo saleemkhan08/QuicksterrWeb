@@ -1,4 +1,4 @@
-import { firestore } from "../store";
+import { firestore, database } from "../store";
 import { USERS, RESTAURANT_ID, TYPE } from "./navigationActions";
 export const WAITERS = "waiter";
 
@@ -22,14 +22,20 @@ export const EMAIL = "email";
 export function fetchWaiters(restaurantId) {
   return dispatch => {
     dispatch(fetchWaitersBegin());
-    const waitersRef = firestore.collection(USERS);
-    const query = waitersRef
-      .where(RESTAURANT_ID, "==", restaurantId)
-      .where(TYPE, "==", WAITERS);
-    query.onSnapshot(querySnapshot => {
+    const query = database
+      .ref()
+      .child(USERS)
+      .orderByChild(RESTAURANT_ID)
+      .equalTo(restaurantId);
+    query.on("value", querySnapshot => {
+      const restaurantEmployees = querySnapshot.val();
       const waiters = [];
-      querySnapshot.forEach(doc => {
-        waiters.push(doc.data());
+      const uids = Object.keys(restaurantEmployees);
+      uids.forEach(uid => {
+        const employee = restaurantEmployees[uid];
+        if (employee.type === WAITERS) {
+          waiters.push(employee);
+        }
       });
       dispatch(fetchWaitersSuccess(waiters));
     });
@@ -52,25 +58,24 @@ export const fetchWaitersError = error => ({
 
 export function addWaiters(restaurantId, email) {
   return dispatch => {
+    const userRef = database.ref(USERS);
     dispatch(addWaitersBegin());
-    const userCollectionRef = firestore.collection(USERS);
-    const waiterRef = userCollectionRef.where(EMAIL, "==", email);
-    waiterRef
-      .get()
+    userRef
+      .orderByChild(EMAIL)
+      .equalTo(email)
+      .once("value")
       .then(snapShot => {
-        snapShot.forEach(doc => {
-          userCollectionRef
-            .doc(doc.data().uid)
-            .update({ restaurantId: restaurantId, type: "waiter" })
-            .then(() => {
-              dispatch(addWaitersSuccess());
-            })
-            .catch(error => {
-              dispatch(addWaitersError(error));
-            });
-        });
+        const users = snapShot.val();
+        const user = users[Object.keys(users)[0]];
+        return userRef
+          .child(user.uid)
+          .update({ restaurantId: restaurantId, type: "waiter" });
+      })
+      .then(() => {
+        dispatch(addWaitersSuccess());
       })
       .catch(error => {
+        console.log("addWaiters : error ", error);
         dispatch(addWaitersError(error));
       });
   };
@@ -91,25 +96,24 @@ export const addWaitersError = error => ({
 
 export function deleteWaiters(email) {
   return dispatch => {
+    const userRef = database.ref(USERS);
     dispatch(deleteWaitersBegin());
-    const userCollectionRef = firestore.collection(USERS);
-    const waiterRef = userCollectionRef.where(EMAIL, "==", email);
-    waiterRef
-      .get()
+    userRef
+      .orderByChild(EMAIL)
+      .equalTo(email)
+      .once("value")
       .then(snapShot => {
-        snapShot.forEach(doc => {
-          userCollectionRef
-            .doc(doc.data().uid)
-            .update({ restaurantId: "", type: "user" })
-            .then(() => {
-              dispatch(deleteWaitersSuccess());
-            })
-            .catch(error => {
-              dispatch(deleteWaitersError(error));
-            });
-        });
+        const users = snapShot.val();
+        const user = users[Object.keys(users)[0]];
+        return userRef
+          .child(user.uid)
+          .update({ restaurantId: "", type: "user" });
+      })
+      .then(() => {
+        dispatch(deleteWaitersSuccess());
       })
       .catch(error => {
+        console.log("addWaiters : error ", error);
         dispatch(deleteWaitersError(error));
       });
   };

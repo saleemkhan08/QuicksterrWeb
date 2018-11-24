@@ -16,6 +16,11 @@ import UploadImageDialog from "./UploadImageDialog";
 import "./App.css";
 
 class App extends Component {
+  componentDidMount() {
+    this.unregisterAuthObserver = firebase.auth().onAuthStateChanged(user => {
+      this.props.setUserStatus(user);
+    });
+  }
   render() {
     return (
       <BrowserRouter>
@@ -42,11 +47,6 @@ class App extends Component {
       </BrowserRouter>
     );
   }
-  componentDidMount() {
-    this.unregisterAuthObserver = firebase.auth().onAuthStateChanged(user => {
-      this.props.setUserStatus(user);
-    });
-  }
 
   componentWillUnmount() {
     this.unregisterAuthObserver();
@@ -66,7 +66,8 @@ const mapDispatchToProps = dispatch => {
 };
 
 App.propTypes = {
-  setUserStatus: PropTypes.func
+  setUserStatus: PropTypes.func,
+  dispatch: PropTypes.func
 };
 
 export default connect(

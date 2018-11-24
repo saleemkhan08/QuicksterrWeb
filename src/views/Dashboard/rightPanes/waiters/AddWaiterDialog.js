@@ -1,8 +1,10 @@
 import React from "react";
 import EditDialog from "../../../../components/dialogs/EditDialog";
-import TextField from "@material-ui/core/TextField";
 import PropTypes from "prop-types";
-export default class AddWaiterDialog extends React.Component {
+import IntegratedReactSelect from "../../../IntegratedReactSelect";
+import { connect } from "react-redux";
+import { fetchUsers } from "../../../../actions/navigationActions";
+class AddWaiterDialog extends React.Component {
   constructor(props) {
     super(props);
     this.handleSave = this.handleSave.bind(this);
@@ -12,13 +14,23 @@ export default class AddWaiterDialog extends React.Component {
     };
   }
 
-  handleChange = event => {
-    this.setState({
-      [event.target.id]: event.target.value
-    });
-  };
+  componentDidMount() {
+    this.props.dispatch(fetchUsers());
+  }
+
   render() {
-    const { email } = this.state;
+    const { users } = this.props.navigationReducer;
+    const labledUsers = [];
+    if (users) {
+      const uids = Object.keys(users);
+      uids.forEach(uid => {
+        const user = users[uid];
+        labledUsers.push({
+          label: user.email,
+          value: user.email
+        });
+      });
+    }
     return (
       <div>
         <EditDialog
@@ -27,19 +39,23 @@ export default class AddWaiterDialog extends React.Component {
           handleSave={this.handleSave}
           handleCancel={this.handleCancel}
         >
-          <TextField
-            id="email"
+          <IntegratedReactSelect
             label="Waiter's Email ID"
-            margin="normal"
-            fullWidth
-            value={email}
-            onChange={this.handleChange}
-            className="inputFields"
+            onChange={str => this.updateList(str)}
+            suggestions={labledUsers}
           />
         </EditDialog>
       </div>
     );
   }
+
+  updateList = email => {
+    console.log("updateList : email : ", email);
+    this.setState({
+      email: email
+    });
+  };
+
   handleSave() {
     this.props.handleAddSave(this.state.email);
     this.setState({
@@ -55,5 +71,15 @@ export default class AddWaiterDialog extends React.Component {
 AddWaiterDialog.propTypes = {
   handleCancel: PropTypes.func,
   handleAddSave: PropTypes.func,
-  open: PropTypes.bool
+  open: PropTypes.bool,
+  navigationReducer: PropTypes.object,
+  dispatch: PropTypes.func
 };
+
+const mapStateToProps = state => {
+  return {
+    navigationReducer: state.NavigationReducer
+  };
+};
+
+export default connect(mapStateToProps)(AddWaiterDialog);

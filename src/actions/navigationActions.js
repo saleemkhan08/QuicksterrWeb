@@ -6,7 +6,7 @@ import notifications from "../assets/img/sidebar-icons/notifications.svg";
 import category from "../assets/img/sidebar-icons/category.svg";
 import menu from "../assets/img/sidebar-icons/menu.svg";
 import dish from "../assets/img/sidebar-icons/dishes.svg";
-import { firestore } from "../store";
+import { database } from "../store";
 export const LOGIN_USER = "LOGIN_USER";
 export const LOGOUT_USER = "LOGOUT_USER";
 export const CHANGE_NAVBAR_COLOR = "CHANGE_NAVBAR_COLOR";
@@ -16,7 +16,7 @@ export const RESTAURANT_ID = "restaurantId";
 export const TYPE = "type";
 export const CHANGE_MAIN_CONTENT_TYPE = "CHANGE_MAIN_CONTENT_TYPE";
 export const SET_ADMIN_STATUS = "SET_ADMIN_STATUS";
-
+export const USERS_FETCH_SUCCESS = "USERS_FETCH_SUCCESS";
 export const RESTAURANT_DETAILS = {
   name: "Restaurants",
   type: "RESTAURANT_DETAILS",
@@ -124,11 +124,11 @@ export const sidebarLinks = [
 
 export function fetchUser(userId) {
   return dispatch => {
-    const usersRef = firestore.collection(USERS).doc(userId);
+    const usersRef = database.ref(USERS).child(userId);
     usersRef
-      .get()
-      .then(docSnapshot => {
-        const user = docSnapshot.data();
+      .once("value")
+      .then(snapshot => {
+        const user = snapshot.val();
         dispatch(loginUser(user));
         return user;
       })
@@ -159,3 +159,29 @@ export const setAdminStatus = status => ({
   type: SET_ADMIN_STATUS,
   payload: status
 });
+
+export const usersFetched = users => ({
+  type: USERS_FETCH_SUCCESS,
+  payload: users
+});
+
+export const fetchUsers = searchText => {
+  let email = "";
+  if (searchText) {
+    email = searchText.toLowerCase();
+  }
+  return dispatch => {
+    database
+      .ref(USERS)
+      .orderByChild("email")
+      .limitToFirst(5)
+      .startAt(email)
+      .endAt(email + "\uf8ff")
+      .once("value")
+      .then(snapshots => {
+        const users = snapshots.val();
+        console.log("fetchUsers :", users);
+        dispatch(usersFetched(users));
+      });
+  };
+};

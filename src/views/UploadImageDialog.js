@@ -107,7 +107,7 @@ class UploadImageDialog extends React.Component {
         </AppBar>
         <div className="container">
           <SearchBar
-            onChange={str => this.updateList(str)}
+            onChange={event => this.updateList(event)}
             searchStr={this.state.searchStr}
           />
           <CrudList
