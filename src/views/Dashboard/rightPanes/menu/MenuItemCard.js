@@ -15,15 +15,14 @@ import Button from "@material-ui/core/Button";
 import order from "../../../../assets/img/sidebar-icons/orders.svg";
 import "./MenuStyle.css";
 import { connect } from "react-redux";
-import { RESTAURANTS } from "../../../../actions/restaurantActions";
+import { RESTAURANTS } from "../../../../views/RestaurantPage/restaurantActions";
 import { CATEGORIES } from "../../../../actions/menuActions";
 import {
   addItemToOrder,
-  openTableAndUserSetter,
   removeItemFromOrder,
   setCurrentOrderRestaurant,
   CLEAR_CURRENT_ORDERS
-} from "../../../../actions/ordersActions";
+} from "../orders/ordersActions";
 import { showMessage } from "../../../../actions/messageActions";
 import veg from "../../../../assets/img/veg.svg";
 import nonVeg from "../../../../assets/img/nonVeg.svg";
@@ -31,37 +30,48 @@ import { DISHES } from "../../../../actions/dishesActions";
 export class MenuItemCard extends Component {
   render() {
     const { item } = this.props;
-    const icon = item.icon ? item.icon : MENU_ITEM_DETAILS.icon;
     const { currentCategory } = this.props.menu;
-    return (
-      <GridItem xs={12} sm={6} md={4} lg={3}>
-        <Paper className="menuCardContainer">
-          {this.getAdminOptions(item)}
-          <img
-            alt=""
-            className="veg-symbol"
-            src={item.object.veg === "Y" ? veg : nonVeg}
-          />
-          <div className="menu-img-container">
-            {this.showImgUploadBtn(
-              item.name + ", " + currentCategory.name,
-              item.id,
-              currentCategory.id
-            )}
-            {icon.includes(".svg") ? (
-              <img alt="" className="menuItemImgContain" src={icon} />
-            ) : (
-              <img alt="" className="menuItemImg" src={icon} />
-            )}
-          </div>
-          <h5 className="cardHeading">{item.name}</h5>
-          <p className="cardDescription">{item.description}</p>
-          <Divider className="divider" />
-          {this.getOrderLayout(item)}
-        </Paper>
-      </GridItem>
-    );
+    if (currentCategory) {
+      let icon = item && item.icon ? item.icon : currentCategory.icon;
+      icon = icon ? icon : MENU_ITEM_DETAILS.icon;
+      const itemName = item ? item.name + ", " : "" + currentCategory.name;
+      const itemId = item ? item.id : "";
+      const itemDescription = item ? item.description : "";
+      const currentCategoryId = currentCategory ? currentCategory.id : "";
+      const isDisabled = item.object.active !== "Y";
+      let menuItemClass = "menuCardContainer";
+      if (isDisabled) menuItemClass = "menuCardContainer-disabled";
+      return (
+        <GridItem xs={12} sm={6} md={4} lg={3}>
+          <Paper className={menuItemClass}>
+            {this.getAdminOptions(item)}
+            <img
+              alt=""
+              className="veg-symbol"
+              src={item.object.veg === "Y" ? veg : nonVeg}
+            />
+            <div className="menu-img-container">
+              {this.showImgUploadBtn(itemName, itemId, currentCategoryId)}
+              {icon.includes(".svg") ? (
+                <img alt="" className="menuItemImgContain" src={icon} />
+              ) : (
+                <img alt="" className="menuItemImg" src={icon} />
+              )}
+            </div>
+            <h5 className="cardHeading">{itemName}</h5>
+            <p className="cardDescription">{itemDescription}</p>
+            <Divider className="divider" />
+            {isDisabled ? this.showUnavailable() : this.getOrderLayout(item)}
+          </Paper>
+        </GridItem>
+      );
+    }
+    return "";
   }
+
+  showUnavailable = () => {
+    return <h3 className="unavailable"> Unavailable</h3>;
+  };
 
   getOrderLayout(item) {
     const currentOrderListRef = this.props.order.currentOrderList[item.id];
@@ -135,7 +145,7 @@ export class MenuItemCard extends Component {
   };
 
   addItemToOrder = currentOrderList => {
-    const { currentOrderRestaurant, table } = this.props.order;
+    const { currentOrderRestaurant } = this.props.order;
     let orderResId = currentOrderRestaurant
       ? currentOrderRestaurant.restaurantId
       : undefined;
@@ -147,9 +157,6 @@ export class MenuItemCard extends Component {
     }
     if (orderResId === currentResId) {
       this.props.dispatch(addItemToOrder(currentOrderList));
-      if (table === undefined) {
-        this.props.dispatch(openTableAndUserSetter());
-      }
     } else {
       this.props.dispatch(
         showMessage(

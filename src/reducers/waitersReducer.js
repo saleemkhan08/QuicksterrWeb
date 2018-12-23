@@ -1,6 +1,7 @@
 import {
   FETCH_WAITERS_BEGIN,
-  FETCH_WAITERS_SUCCESS
+  FETCH_WAITERS_SUCCESS,
+  FETCH_WAITERS_ERROR
 } from "../actions/waitersActions";
 
 const initialState = {
@@ -24,6 +25,13 @@ const WaitersReducer = (state = initialState, action) => {
         ...state,
         isLoading: false,
         waiters: action.payload
+      };
+
+    case FETCH_WAITERS_ERROR:
+      return {
+        ...state,
+        isLoading: false,
+        waiters: []
       };
 
     default:

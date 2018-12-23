@@ -1,7 +1,7 @@
 import { createStore, applyMiddleware, combineReducers } from "redux";
-import RestaurantReducer from "./reducers/restaurantReducer";
+import RestaurantReducer from "./views/RestaurantPage/restaurantReducer";
 import NavigationReducer from "./reducers/navigationReducer";
-import OrderReducer from "./reducers/orderReducer";
+import OrderReducer from "./views/Dashboard/rightPanes/orders/orderReducer";
 import TablesReducer from "./reducers/tablesReducer";
 import WaitersReducer from "./reducers/waitersReducer";
 import ChefsReducer from "./reducers/chefsReducer";

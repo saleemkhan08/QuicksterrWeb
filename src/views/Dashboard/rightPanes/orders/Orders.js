@@ -3,10 +3,7 @@ import PropTypes from "prop-types";
 import { ORDER_DETAILS } from "../../../../actions/navigationActions";
 import { connect } from "react-redux";
 import CRUDList from "../../../CrudList";
-import {
-  fetchOrders,
-  get2DigitNumber
-} from "../../../../actions/ordersActions";
+import { fetchOrders, get2DigitNumber } from "./ordersActions";
 import "./Order.css";
 import Datetime from "react-datetime";
 import "./Order.css";

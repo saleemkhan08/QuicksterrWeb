@@ -1,0 +1,12 @@
+.editDialogContainer {
+  min-width: 300px;
+  padding: 0 20px 0 20px;
+}
+
+.inputFields {
+  display: block;
+}
+
+.dialogActions {
+  margin-bottom: 20px;
+}

@@ -1,6 +1,8 @@
 import {
   FETCH_ORDERS_BEGIN,
   FETCH_ORDERS_SUCCESS,
+  FETCH_ACTIVE_ORDERS_BEGIN,
+  FETCH_ACTIVE_ORDERS_SUCCESS,
   ADD_ITEM_TO_ORDER,
   REMOVE_ITEM_FROM_ORDER,
   SET_CURRENT_ORDER_RESTAURANT_ID,
@@ -8,31 +10,25 @@ import {
   RESET_ORDER_ACTION,
   PLACING_ORDER_ACTION,
   ORDER_PLACED_ACTION,
-  FAILED_TO_PLACE_ORDER_ACTION,
   ORDER_BEING_PREPAIRED_ACTION,
-  UPDATING_ORDER_ACTION,
-  FAILED_TO_UPDATE_ORDER_ACTION,
-  ORDER_UPDATED_ACTION,
-  PREPAIRING_UPDATED_ORDER_ACTION,
   ORDER_PREPAIRED_ACTION,
   ORDER_SERVED_ACTION,
   PAYMENT_RECEIVED_ACTION,
   RESET_ORDER,
   PLACING_ORDER,
   ORDER_PLACED,
-  FAILED_TO_PLACE_ORDER,
   PREPAIRING_ORDER,
-  UPDATING_ORDER,
-  FAILED_TO_UPDATE_ORDER,
-  ORDER_UPDATED,
-  PREPAIRING_UPDATED_ORDER,
   ORDER_PREPAIRED,
   ORDER_SERVED,
   PAYMENT_RECEIVED,
   OPEN_TABLE_AND_USER_SETTER,
   CLOSE_TABLE_AND_USER_SETTER,
-  SET_TABLE_AND_CUSTOMER
-} from "../actions/ordersActions";
+  SET_TABLE_AND_CUSTOMER,
+  TAKE_AWAY,
+  UPDATE_ORDER_STATUS_BEGIN,
+  UPDATE_ORDER_STATUS_SUCCESS,
+  UPDATE_ORDER_STATUS_ERROR
+} from "./ordersActions";
 
 // RESET_ORDER -> PLACING_ORDER -> ORDER_PLACED -> PREPAIRING_ORDER -> ORDER_PREPAIRED -> ORDER_SERVED;
 /* RESET_ORDER -> PLACING_ORDER -> ORDER_PLACED -> PREPAIRING_ORDER ->
@@ -42,19 +38,48 @@ import {
 
 const initialState = {
   orders: [],
+  activeOrders: [],
   isLoading: true,
+  isActiveLoading: true,
+  isStatusLoading: false,
   error: null,
   currentOrderList: {},
   currentOrderRestaurant: undefined,
   status: RESET_ORDER,
   openTableAndUserSetter: false,
   table: undefined,
-  customer: undefined,
-  noOfPeople: 1
+  noOfPeople: 1,
+  name: "",
+  phoneNo: ""
 };
 
 const OrderReducer = (state = initialState, action) => {
   switch (action.type) {
+    case UPDATE_ORDER_STATUS_BEGIN:
+      return {
+        ...state,
+        isStatusLoading: true
+      };
+    case UPDATE_ORDER_STATUS_SUCCESS: {
+      const updatedActiveOrders = [];
+      state.activeOrders.forEach(order => {
+        if (order.id === action.payload.id) {
+          updatedActiveOrders.push(action.payload);
+        } else {
+          updatedActiveOrders.push(order);
+        }
+      });
+      return {
+        ...state,
+        isStatusLoading: false,
+        activeOrders: updatedActiveOrders
+      };
+    }
+    case UPDATE_ORDER_STATUS_ERROR:
+      return {
+        ...state,
+        isStatusLoading: false
+      };
     case RESET_ORDER_ACTION:
       return {
         ...state,
@@ -69,39 +94,16 @@ const OrderReducer = (state = initialState, action) => {
       return {
         ...state,
         status: ORDER_PLACED,
+        currentOrderList: {},
+        error: null,
         table: undefined,
-        customer: undefined
-      };
-    case FAILED_TO_PLACE_ORDER_ACTION:
-      return {
-        ...state,
-        status: FAILED_TO_PLACE_ORDER
+        name: "",
+        phoneNo: ""
       };
     case ORDER_BEING_PREPAIRED_ACTION:
       return {
         ...state,
         status: PREPAIRING_ORDER
-      };
-    case UPDATING_ORDER_ACTION:
-      return {
-        ...state,
-        status: UPDATING_ORDER
-      };
-
-    case FAILED_TO_UPDATE_ORDER_ACTION:
-      return {
-        ...state,
-        status: FAILED_TO_UPDATE_ORDER
-      };
-    case ORDER_UPDATED_ACTION:
-      return {
-        ...state,
-        status: ORDER_UPDATED
-      };
-    case PREPAIRING_UPDATED_ORDER_ACTION:
-      return {
-        ...state,
-        status: PREPAIRING_UPDATED_ORDER
       };
 
     case ORDER_PREPAIRED_ACTION:
@@ -132,6 +134,19 @@ const OrderReducer = (state = initialState, action) => {
         isLoading: false,
         orders: action.payload.orders
       };
+    case FETCH_ACTIVE_ORDERS_BEGIN:
+      return {
+        ...state,
+        isActvieLoading: true,
+        error: null
+      };
+
+    case FETCH_ACTIVE_ORDERS_SUCCESS:
+      return {
+        ...state,
+        isActvieLoading: false,
+        activeOrders: action.payload.activeOrders
+      };
     case ADD_ITEM_TO_ORDER: {
       const item = action.payload.item;
       item.count++;
@@ -147,10 +162,20 @@ const OrderReducer = (state = initialState, action) => {
       if (item.count <= 0) {
         delete state.currentOrderList[item.id];
       }
-      return {
-        ...state,
-        currentOrderList: state.currentOrderList
-      };
+      if (Object.keys(state.currentOrderList).length > 0) {
+        return {
+          ...state,
+          currentOrderList: state.currentOrderList
+        };
+      } else {
+        return {
+          ...state,
+          error: null,
+          table: undefined,
+          name: "",
+          phoneNo: ""
+        };
+      }
     }
     case SET_CURRENT_ORDER_RESTAURANT_ID:
       return {
@@ -160,14 +185,19 @@ const OrderReducer = (state = initialState, action) => {
     case CLEAR_CURRENT_ORDERS:
       return {
         ...state,
-        currentOrderRestaurant: undefined,
-        currentOrderList: {}
+        error: null,
+        table: undefined,
+        currentOrderList: {},
+        name: "",
+        phoneNo: ""
       };
-    case OPEN_TABLE_AND_USER_SETTER:
+    case OPEN_TABLE_AND_USER_SETTER: {
+      console.log("OPEN_TABLE_AND_USER_SETTER");
       return {
         ...state,
         openTableAndUserSetter: true
       };
+    }
     case CLOSE_TABLE_AND_USER_SETTER:
       return {
         ...state,
@@ -176,9 +206,14 @@ const OrderReducer = (state = initialState, action) => {
     case SET_TABLE_AND_CUSTOMER:
       return {
         ...state,
-        table: action.payload.table,
-        customer: action.payload.customer,
-        noOfPeople: action.payload.noOfPeople
+        table: action.payload.isTakeAway
+          ? TAKE_AWAY
+          : action.payload.table
+          ? action.payload.table
+          : TAKE_AWAY,
+        noOfPeople: action.payload.noOfPeople,
+        name: action.payload.name,
+        phoneNo: action.payload.phoneNo
       };
     default:
       return state;

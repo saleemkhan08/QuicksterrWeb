@@ -14,7 +14,7 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import MenuItemCard from "../views/Dashboard/rightPanes/menu/MenuItemCard";
 import OrderItemCard from "../views/Dashboard/rightPanes/orders/OrderItemCard";
-import { RESTAURANTS } from "../actions/restaurantActions";
+import { RESTAURANTS } from "../views/RestaurantPage/restaurantActions";
 import {
   CircularLoading,
   CenteredText
@@ -305,6 +305,8 @@ class CRUDList extends Component {
                 keywords = item.name;
                 break;
               }
+              default:
+                break;
             }
             this.props.dispatch(openImageUploadDialog(keywords, refPath));
           }}
@@ -319,6 +321,8 @@ class CRUDList extends Component {
       case RESTAURANT_DETAILS.name:
       case IMAGES_DETAILS.name:
         this.props.onLinkClick(item);
+        break;
+      default:
         break;
     }
   };

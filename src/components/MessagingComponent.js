@@ -9,6 +9,7 @@ import CloseIcon from "@material-ui/icons/Close";
 export class MessagingComponent extends Component {
   render() {
     const { show, message, action, actionBtnName } = this.props.reducer;
+    const actionBtnNameTemp = actionBtnName ? actionBtnName : "";
     return (
       <div>
         <Snackbar
@@ -30,7 +31,7 @@ export class MessagingComponent extends Component {
                 this.props.dispatch(customAction(action));
               }}
             >
-              {actionBtnName}
+              {actionBtnNameTemp}
             </Button>,
             <IconButton
               key="close"

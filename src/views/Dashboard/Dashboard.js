@@ -29,9 +29,16 @@ import {
 } from "../../actions/navigationActions";
 import { fetchChefs } from "../../actions/chefsActions";
 import { fetchCategories, resetMenu } from "../../actions/menuActions";
-import { fetchCurrentRestaurant } from "../../actions/restaurantActions";
+import {
+  fetchCurrentRestaurant,
+  resetCurrentRestaurant
+} from "../../views/RestaurantPage/restaurantActions";
 import { fetchTables } from "../../actions/tablesActions";
 import { fetchWaiters } from "../../actions/waitersActions";
+import {
+  fetchOrders,
+  fetchActiveOrders
+} from "./rightPanes/orders/ordersActions";
 class Dashboard extends React.Component {
   componentDidMount() {
     //Changing the navbar color
@@ -47,12 +54,14 @@ class Dashboard extends React.Component {
     this.props.dispatch(fetchTables(restaurantId));
     this.props.dispatch(fetchChefs(restaurantId));
     this.props.dispatch(fetchWaiters(restaurantId));
-
+    this.props.dispatch(fetchOrders(restaurantId));
+    this.props.dispatch(fetchActiveOrders(restaurantId));
     //Setting the default tab for dashboard
     this.props.dispatch(changeMainContentType());
   }
   componentWillUnmount() {
     this.props.dispatch(resetMenu());
+    this.props.dispatch(resetCurrentRestaurant());
   }
   render() {
     const { classes } = this.props;

@@ -1,5 +1,5 @@
 import { firestore } from "../store";
-import { RESTAURANTS } from "./restaurantActions";
+import { RESTAURANTS } from "../views/RestaurantPage/restaurantActions";
 import { CATEGORIES } from "./menuActions";
 export const DISHES = "dishes";
 
@@ -40,7 +40,11 @@ export function fetchDishes(restaurantId, categoryId) {
       querySnapshot.forEach(doc => {
         dishes.push(doc.data());
       });
-      dispatch(fetchDishesSuccess(dishes));
+      if (dishes.length > 0) {
+        dispatch(fetchDishesSuccess(dishes));
+      } else {
+        dispatch(fetchDishesError());
+      }
     });
   };
 }
@@ -90,9 +94,8 @@ export const fetchDishesSuccess = dishes => ({
   payload: dishes
 });
 
-export const fetchDishesError = error => ({
-  type: FETCH_DISHES_ERROR,
-  payload: { error }
+export const fetchDishesError = () => ({
+  type: FETCH_DISHES_ERROR
 });
 
 export function addDishes(restaurantId, categoryId, dish) {

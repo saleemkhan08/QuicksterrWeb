@@ -212,11 +212,17 @@ export const fetchImagesSuccess = images => ({
   type: FETCH_IMAGES_SUCCESS,
   payload: images
 });
+//1168518806
 export const uploadImage = (imgFile, keywords) => {
+  console.log("Image file object", imgFile);
+  const fileExtension = imgFile.name.split(".").pop();
+  console.log("Image file fileExtension", fileExtension);
   return dispatch => {
     const imgDbRef = firestore.collection(COMMON_IMAGES).doc();
     dispatch(uploadStarted());
-    const imgStorageRef = storageRef.child(COMMON_IMAGES).child(imgDbRef.id);
+    const imgStorageRef = storageRef
+      .child(COMMON_IMAGES)
+      .child(imgDbRef.id + "." + fileExtension);
     imgStorageRef
       .put(imgFile)
       .then(snap => {

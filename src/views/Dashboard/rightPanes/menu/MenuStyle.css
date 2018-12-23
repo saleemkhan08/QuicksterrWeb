@@ -1,0 +1,296 @@
+.orderCountContainer {
+  display: flex;
+  text-align: center;
+  justify-content: space-around;
+  flex-direction: row;
+  margin: auto;
+  padding: 10px;
+  /* margin-right: 16px; */
+}
+.orderCountIcon {
+  padding: 0 !important;
+  width: 24px;
+  height: 24px;
+  margin: auto 4px auto 4px !important;
+}
+.orderCount {
+  padding: 0 !important;
+}
+.closeBtn {
+  position: absolute !important;
+  top: 15px !important;
+  right: 20px !important;
+  width: 35px !important;
+  height: 35px !important;
+  padding: 0 !important;
+  z-index: 10;
+}
+.price {
+  margin: auto 15px auto 15px !important;
+}
+.editBtn {
+  position: absolute !important;
+  top: 50px !important;
+  right: 20px !important;
+  width: 35px !important;
+  height: 35px !important;
+  padding: 0 !important;
+  z-index: 10;
+}
+.orderImage {
+  width: 30px !important;
+  height: 30px !important;
+}
+.textContainer {
+  display: flex;
+  height: 90px;
+  justify-content: space-between;
+}
+.divider {
+  margin: 10px 10px 0 10px !important;
+}
+.orderButton {
+  width: 48px !important;
+  height: 48px !important;
+  min-width: 48px !important;
+  margin: auto 15px auto 15px !important;
+}
+.cardHeading {
+  color: #565656 !important;
+  margin: 0 15px 0 15px;
+  text-align: center;
+}
+.cardDescription {
+  text-align: center;
+  color: #898989 !important;
+  font-size: 12px;
+  margin: 0 15px 0 15px !important;
+  line-height: 1.4;
+  margin: 0;
+}
+.menuCardContainer {
+  padding: 0px;
+  margin-bottom: 20px;
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+.menuCardContainer-disabled {
+  padding: 0px;
+  margin-bottom: 20px;
+  background-color: transparent !important;
+  box-shadow: none !important;
+  opacity: 0.5;
+}
+.menuCardContainer:hover {
+  box-shadow: 0px 1px 5px 0px rgba(0, 0, 0, 0.2),
+    0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 3px 1px -2px rgba(0, 0, 0, 0.12) !important;
+}
+.menuItemImg {
+  display: flex;
+  height: 160px;
+  cursor: pointer;
+  margin: 10px auto 0 auto;
+  padding: 10px;
+  width: 240px;
+  object-fit: cover; /* Do not scale the image */
+  object-position: center; /* Center the image within the element */
+}
+
+.menuItemImgContain {
+  display: flex;
+  height: 160px;
+  cursor: pointer;
+  margin: 10px auto 0 auto;
+  padding: 10px;
+  width: 240px;
+  object-fit: contain; /* Do not scale the image */
+  object-position: center; /* Center the image within the element */
+}
+.menuItemImg > div {
+  display: none;
+}
+
+.menuItemImg:hover > div {
+  display: flex;
+  text-align: center;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  justify-content: center;
+  flex-direction: column;
+  background-color: #ffffff99;
+}
+
+.menuItemImgInnerContainer .drawer-item-text {
+  font-size: 16px;
+  text-align: center;
+}
+.drawer-item {
+  width: 100% !important;
+  margin: 5px 20px 5px 20px !important;
+}
+.hide-progress {
+  display: none !important;
+}
+.drawer-item-container {
+  display: flex;
+}
+.tabsContainer {
+  width: 100vw;
+}
+::-webkit-scrollbar {
+  display: none;
+}
+
+.tab-component {
+  min-width: 150px !important;
+  font-family: "Roboto", "Helvetica", "Arial", sans-serif !important;
+  font-weight: 400 !important;
+  font-size: 12px !important;
+}
+
+.tabsAppBar {
+  box-shadow: none !important;
+  background: transparent !important;
+}
+
+@media (max-width: 599.95px) {
+  .tabs > div > button {
+    display: block !important;
+  }
+}
+
+.sidebar-item-menu {
+  margin-bottom: 0 !important;
+}
+
+.actionBtn {
+  width: 35px !important;
+  height: 35px !important;
+  padding: 0 !important;
+}
+
+.table-select {
+  width: 100%;
+}
+
+.import-btn-outer-container {
+  display: inline-flex;
+  margin-left: 15px;
+}
+
+.center-progress {
+  margin: 10px auto 30px auto !important;
+}
+
+.import-status-message {
+  min-width: 300px !important;
+  text-align: center !important;
+}
+
+.veg-symbol {
+  width: 24px;
+  height: 24px;
+  position: absolute;
+  top: 20px;
+  left: 60px;
+  z-index: 20;
+}
+
+.menu-img-container {
+  position: relative;
+  display: block;
+  text-align: center;
+  height: 160px;
+}
+.menu-img-upload-btn {
+  position: absolute !important;
+  background-color: #fafafaaa !important;
+  top: 60%;
+  left: 50%;
+  margin-left: -24px !important;
+}
+
+.menu-img-upload-btn:hover {
+  background-color: #fafafa !important;
+}
+
+.table-card {
+}
+.table-card {
+  cursor: pointer !important;
+  margin-bottom: 15px !important;
+}
+.table-container {
+  padding: 10px;
+  display: inline-flex;
+  flex-direction: column;
+  width: 100% !important;
+}
+.table-cardImg {
+  border-radius: 4px !important;
+  height: 80px;
+  width: 80px;
+  display: block;
+  margin: auto;
+  object-fit: cover; /* Do not scale the image */
+  object-position: center; /* Center the image within the element */
+}
+.table-cardImg-contain {
+  border-radius: 4px !important;
+  max-height: 80px;
+  width: 80px;
+  margin: auto;
+  display: block;
+  object-fit: contain; /* Do not scale the image */
+  object-position: center; /* Center the image within the element */
+}
+
+.table-cardImg-container {
+  display: flex;
+  min-height: 80px;
+  background-color: #ffffff;
+  position: relative;
+  border-radius: 4px !important;
+}
+.table-textContainer {
+  overflow: auto;
+  width: 100% !important;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.table-cardHeading {
+  font-size: 16px !important;
+  font-weight: 400 !important;
+  padding: 5px 0 0 0 !important;
+  margin: 0 !important;
+  text-align: center;
+}
+.table-cardDescription {
+  font-size: 13px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  line-height: 1.3;
+  word-wrap: break-word;
+  text-align: center;
+}
+
+.takeAwaySwitch {
+  display: flex;
+}
+.takeAwayLable {
+  margin: auto 0 auto auto;
+}
+
+.error-text {
+  color: rgb(182, 58, 58);
+  text-align: center;
+  width: 100%;
+}
+
+.unavailable {
+  width: 100%;
+  text-align: center;
+}

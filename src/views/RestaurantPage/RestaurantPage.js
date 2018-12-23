@@ -9,15 +9,14 @@ import {
   fetchRestaurants,
   addRestaurants,
   editRestaurants,
-  deleteRestaurants,
-  fetchCurrentRestaurant
-} from "../../actions/restaurantActions";
+  fetchCurrentRestaurant,
+  fetchCategoriesToDeleteRestaurant
+} from "./restaurantActions";
 import {
   changeNavbarColor,
   RESTAURANT_DETAILS
 } from "../../actions/navigationActions";
 import CRUDList from "../CrudList";
-import { SearchBar } from "../../components/Centered/CenteredUtils";
 import RestaurantEditDialog from "./RestaurantEditDialog";
 import RestaurantAddDialog from "./RestaurantAddDialog";
 import { setAdminStatus, MASTER_ADMIN } from "../../actions/navigationActions";
@@ -63,7 +62,6 @@ class RestaurantPage extends React.Component {
     return (
       <div>
         <div className="full-height-container container">
-          <SearchBar />
           <CRUDList
             items={crudItems}
             detail={RESTAURANT_DETAILS}
@@ -128,7 +126,7 @@ class RestaurantPage extends React.Component {
   }
 
   handleDelete(restaurant) {
-    this.props.dispatch(deleteRestaurants(restaurant));
+    this.props.dispatch(fetchCategoriesToDeleteRestaurant(restaurant));
   }
 
   handleEdit(restaurant) {
@@ -160,13 +158,15 @@ class RestaurantPage extends React.Component {
 RestaurantPage.propTypes = {
   navigation: PropTypes.object,
   dispatch: PropTypes.func,
-  reducer: PropTypes.object
+  reducer: PropTypes.object,
+  menu: PropTypes.object
 };
 
 const mapStateToProps = state => {
   return {
     reducer: state.RestaurantReducer,
-    navigation: state.NavigationReducer
+    navigation: state.NavigationReducer,
+    menu: state.MenuReducer
   };
 };
 

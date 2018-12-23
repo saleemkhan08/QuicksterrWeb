@@ -9,7 +9,12 @@ export default class RestaurantAddDialog extends React.Component {
     this.handleCancel = this.handleCancel.bind(this);
     this.state = {
       name: "",
-      address: ""
+      gstNumber: "",
+      bankAccountNumber: "",
+      ifscCode: "",
+      address: "",
+      phoneNumber: "",
+      email: ""
     };
   }
 
@@ -19,7 +24,15 @@ export default class RestaurantAddDialog extends React.Component {
     });
   };
   render() {
-    const { name, address } = this.state;
+    const {
+      name,
+      gstNumber,
+      bankAccountNumber,
+      ifscCode,
+      address,
+      phoneNumber,
+      email
+    } = this.state;
     return (
       <div>
         <EditDialog
@@ -37,11 +50,63 @@ export default class RestaurantAddDialog extends React.Component {
             onChange={this.handleChange}
             className="inputFields"
           />
+
+          <TextField
+            id="gstNumber"
+            label="GST Number"
+            value={gstNumber}
+            rowsMax="4"
+            fullWidth
+            className="inputFields"
+            margin="normal"
+            onChange={this.handleChange}
+          />
+          <TextField
+            id="bankAccountNumber"
+            label="Bank account number"
+            value={bankAccountNumber}
+            rowsMax="4"
+            fullWidth
+            className="inputFields"
+            margin="normal"
+            onChange={this.handleChange}
+          />
+          <TextField
+            id="ifscCode"
+            label="IFSC Code"
+            value={ifscCode}
+            rowsMax="4"
+            fullWidth
+            className="inputFields"
+            margin="normal"
+            onChange={this.handleChange}
+          />
           <TextField
             id="address"
             label="Restaurant Address"
             multiline
             value={address}
+            rowsMax="4"
+            fullWidth
+            className="inputFields"
+            margin="normal"
+            onChange={this.handleChange}
+          />
+          <TextField
+            id="phoneNumber"
+            label="Phone Number"
+            multiline
+            value={phoneNumber}
+            rowsMax="4"
+            fullWidth
+            className="inputFields"
+            margin="normal"
+            onChange={this.handleChange}
+          />
+          <TextField
+            id="email"
+            label="Email"
+            value={email}
             rowsMax="4"
             fullWidth
             className="inputFields"
@@ -55,10 +120,21 @@ export default class RestaurantAddDialog extends React.Component {
   handleSave() {
     const restaurant = {};
     restaurant.name = this.state.name;
+    restaurant.gstNumber = this.state.gstNumber;
+    restaurant.bankAccountNumber = this.state.bankAccountNumber;
+    restaurant.ifscCode = this.state.ifscCode;
     restaurant.address = this.state.address;
+    restaurant.phoneNumber = this.state.phoneNumber;
+    restaurant.email = this.state.email;
+
     this.setState({
       name: "",
-      address: ""
+      gstNumber: "",
+      bankAccountNumber: "",
+      ifscCode: "",
+      address: "",
+      phoneNumber: "",
+      email: ""
     });
     this.props.handleAddSave(restaurant);
   }

@@ -1,6 +1,7 @@
 import {
   FETCH_CHEFS_BEGIN,
-  FETCH_CHEFS_SUCCESS
+  FETCH_CHEFS_SUCCESS,
+  FETCH_CHEFS_ERROR
 } from "../actions/chefsActions";
 
 const initialState = {
@@ -25,7 +26,12 @@ const ChefsReducer = (state = initialState, action) => {
         isLoading: false,
         chefs: action.payload
       };
-
+    case FETCH_CHEFS_ERROR:
+      return {
+        ...state,
+        isLoading: false,
+        chefs: []
+      };
     default:
       return state;
   }

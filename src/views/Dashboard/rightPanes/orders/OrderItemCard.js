@@ -5,34 +5,23 @@ import Paper from "@material-ui/core/Paper";
 import Divider from "@material-ui/core/Divider";
 import "./Order.css";
 import { connect } from "react-redux";
-import {
-  ORDER_PLACED,
-  PREPAIRING_ORDER,
-  ORDER_PREPAIRED,
-  ORDER_SERVED,
-  DINING,
-  PAYMENT_RECEIVED
-} from "../../../../actions/ordersActions";
-
-import orderPlaced from "../../../../assets/img/sidebar-icons/orderPlaced.svg";
-import prepairing from "../../../../assets/img/sidebar-icons/prepairing.svg";
-import prepaired from "../../../../assets/img/sidebar-icons/prepaired.svg";
-import served from "../../../../assets/img/sidebar-icons/served.svg";
-import happyDining from "../../../../assets/img/sidebar-icons/happyDining.svg";
-import billPaid from "../../../../assets/img/sidebar-icons/billPaid.svg";
-import error from "../../../../assets/img/sidebar-icons/error.svg";
+import { getStatus } from "./ordersActions";
 
 class OrderItemCard extends Component {
   render() {
     const { table, noOfPeople, timeStamp, totalAmountToPay } = this.props.item;
-    const { icon, text } = this.getStatus(this.props.item);
+    const { icon, text } = getStatus(this.props.item);
     return (
       <GridItem xs={12} sm={6} md={4} lg={3}>
         <Paper className="menuCardContainer">
-          <img alt="" className="menuItemImg" src={icon} />
+          {icon.includes(".svg") ? (
+            <img alt="" className="menuItemImgContain" src={icon} />
+          ) : (
+            <img alt="" className="menuItemImg" src={icon} />
+          )}
           <div className="title-container">
             <div>
-              <h5 className="table-name">{table}</h5>
+              <h5 className="table-name">{table.name}</h5>
               <p className="status">{text}</p>
             </div>
             <div>
@@ -53,43 +42,6 @@ class OrderItemCard extends Component {
       </GridItem>
     );
   }
-
-  getStatus = item => {
-    let icon = "";
-    let text = "";
-
-    switch (item.status) {
-      case ORDER_PLACED:
-        icon = orderPlaced;
-        text = "Order placed";
-        break;
-      case PREPAIRING_ORDER:
-        icon = prepairing;
-        text = "Food is being prepaired";
-        break;
-      case ORDER_PREPAIRED:
-        icon = prepaired;
-        text = "Ready to serve";
-        break;
-      case ORDER_SERVED:
-        icon = served;
-        text = "Food served";
-        break;
-      case DINING:
-        icon = happyDining;
-        text = "Happy dining";
-        break;
-      case PAYMENT_RECEIVED:
-        icon = billPaid;
-        text = "Bill paid";
-        break;
-      default:
-        icon = error;
-        text = "Status Unknown";
-        break;
-    }
-    return { icon, text };
-  };
 }
 
 OrderItemCard.propTypes = {

@@ -9,7 +9,7 @@ import {
 
 const initialState = {
   dishes: [],
-  isLoading: true,
+  isLoading: false,
   error: null,
   drawer: false
 };
@@ -33,7 +33,7 @@ const DishesReducer = (state = initialState, action) => {
       return {
         ...state,
         isLoading: false,
-        error: action.payload
+        dishes: []
       };
 
     case EDIT_DISHES:

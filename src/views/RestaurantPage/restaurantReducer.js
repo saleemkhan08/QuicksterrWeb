@@ -6,8 +6,9 @@ import {
   FETCH_RESTAURANTS_SUCCESS,
   FETCH_CURRENT_RESTAURANT_BEGIN,
   FETCH_CURRENT_RESTAURANT_SUCCESS,
-  RESET_CURRENT_RESTAURANT
-} from "../actions/restaurantActions";
+  RESET_CURRENT_RESTAURANT,
+  STOP_LOADING
+} from "./restaurantActions";
 
 const initialState = {
   restaurants: [],
@@ -20,6 +21,12 @@ const initialState = {
 
 const RestaurantReducer = (state = initialState, action) => {
   switch (action.type) {
+    case STOP_LOADING:
+      return {
+        ...state,
+        isLoading: false,
+        isCurrentRestaurantLoading: false
+      };
     case RESET_CURRENT_RESTAURANT:
       return {
         ...state,

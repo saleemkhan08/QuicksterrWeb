@@ -95,11 +95,7 @@ class UploadImageDialog extends React.Component {
               handleFiles={files => this.handleImageUpload(files[0], keywords)}
               fileTypes={[".png", ".jpg", ".gif", ".jpeg", ".svg"]}
             >
-              <Button
-                color="inherit"
-                onClick={this.props.handleSave}
-                disabled={isUploading}
-              >
+              <Button color="inherit" disabled={isUploading}>
                 Upload
               </Button>
             </ReactFileReader>
@@ -197,17 +193,12 @@ class UploadImageDialog extends React.Component {
   };
   handleImageUpload = (img, keywords) => {
     this.props.dispatch(uploadImage(img, keywords));
-    // get the keyword or name for which this image is being uploaded
-    // strip off the numbers and have only words from the keyword/name
-    // upload the image and save the image location and metadata/keyword in firestore
-    // update the firestore database for which this image is uploaded.
   };
 }
 
 UploadImageDialog.propTypes = {
   classes: PropTypes.object,
   open: PropTypes.bool,
-  handleSave: PropTypes.func,
   dispatch: PropTypes.func,
   updateImageUrl: PropTypes.func
 };

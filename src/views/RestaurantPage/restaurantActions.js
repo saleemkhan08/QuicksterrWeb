@@ -1,4 +1,6 @@
-import { firestore } from "../store";
+import { firestore } from "../../store";
+import { getCategoryCollectionRef } from "../../actions/menuActions";
+import { showMessage } from "../../actions/messageActions";
 
 export const RESTAURANTS = "restaurants";
 
@@ -21,7 +23,7 @@ export const DELETE_RESTAURANTS = "DELETE_RESTAURANTS";
 export const DELETE_RESTAURANTS_BEGIN = "DELETE_RESTAURANTS_BEGIN";
 export const DELETE_RESTAURANTS_SUCCESS = "DELETE_RESTAURANTS_SUCCESS";
 export const DELETE_RESTAURANTS_ERROR = "DELETE_RESTAURANTS_ERROR";
-
+export const STOP_LOADING = "STOP_LOADING";
 export const FETCH_CURRENT_RESTAURANT_BEGIN = "FETCH_CURRENT_RESTAURANT_BEGIN";
 export const FETCH_CURRENT_RESTAURANT_SUCCESS =
   "FETCH_CURRENT_RESTAURANT_SUCCESS";
@@ -164,3 +166,28 @@ export const deleteRestaurantsError = error => ({
   type: DELETE_RESTAURANTS_ERROR,
   payload: { error }
 });
+
+export const stopLoading = () => ({
+  type: STOP_LOADING
+});
+
+export function fetchCategoriesToDeleteRestaurant(restaurant) {
+  return dispatch => {
+    dispatch(fetchRestaurantsBegin());
+    const categoriesRef = getCategoryCollectionRef(restaurant.restaurantId);
+    categoriesRef.onSnapshot(querySnapshot => {
+      const categories = [];
+      querySnapshot.forEach(doc => {
+        categories.push(doc.data());
+      });
+      dispatch(stopLoading());
+      if (categories.length <= 0) {
+        dispatch(deleteRestaurants(restaurant));
+      } else {
+        dispatch(
+          showMessage("Restaurant contains huge data please contact admin")
+        );
+      }
+    });
+  };
+}

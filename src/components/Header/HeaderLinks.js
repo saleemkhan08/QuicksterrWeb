@@ -13,15 +13,22 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import "./Header.css";
-import CurrentOrdersDialog from "../../views/Dashboard/rightPanes/orders/CurrentOrdersDialog";
+import CurrentOrderDialog from "../../views/Dashboard/rightPanes/orders/CurrentOrderDialog";
+import ActiveOrderListDialog from "../../views/Dashboard/rightPanes/orders/ActiveOrderListDialog";
 
-import { setCurrentOrderRestaurant } from "../../actions/ordersActions";
+import {
+  setCurrentOrderRestaurant,
+  openTableAndUserSetter,
+  TAKE_AWAY
+} from "../../views/Dashboard/rightPanes/orders/ordersActions";
+import TableAndUserSetter from "../../views/Dashboard/rightPanes/menu/TableAndUserSetter";
 const dashboardUserList = ["user", "masterAdmin"];
 export class HeaderLinks extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      open: false
+      open: false,
+      orderListOpen: false
     };
   }
 
@@ -31,7 +38,9 @@ export class HeaderLinks extends Component {
     return (
       <div>
         <List className={classes.list}>
-          {this.getOrdersLink(classes, order)}
+          {this.getTableLink(classes, order, navigation)}
+          {this.getOrdersLink(classes, order, navigation)}
+          {this.getActiveOrdersLink(classes, order, navigation)}
           {this.getUserOptions(classes, navigation)}
           {showMainPageLinks
             ? this.getHrefLink(classes, "About", "/#about")
@@ -46,39 +55,101 @@ export class HeaderLinks extends Component {
             ? this.getLogoutLink(classes, navigation)
             : this.getLoginLink(classes, navigation)}
         </List>
-        <CurrentOrdersDialog
+        <CurrentOrderDialog
           open={this.state.open}
           handleClose={() => this.handleOrderDialog(false)}
         />
+        <ActiveOrderListDialog
+          open={this.state.orderListOpen}
+          handleClose={() => this.handleOrderListDialog(false)}
+          onClose={() => this.handleOrderListDialog(false)}
+        />
+        <TableAndUserSetter />
       </div>
     );
   }
 
-  getOrdersLink = (classes, order) => {
-    const numOrders = Object.keys(order.currentOrderList).length;
-    if (numOrders > 0) {
+  getTableLink = (classes, order, navigation) => {
+    const { table } = order;
+    const { currentRestaurant } = this.props.restaurant;
+    const isTakeAway = table === TAKE_AWAY;
+    const tableName = isTakeAway
+      ? TAKE_AWAY
+      : table
+      ? table.name
+      : "Select Table";
+    if (navigation.isLoggedIn && navigation.user && currentRestaurant) {
       return (
         <ListItem
           className={classes.listItem}
-          onClick={() => this.handleOrderDialog(true)}
+          onClick={() => {
+            console.log("getTableLink : clicked");
+            this.props.dispatch(openTableAndUserSetter());
+          }}
         >
           <Link to="#" className={classes.navLink}>
-            Your Order
-            <span className="badge-count">
-              {Object.keys(order.currentOrderList).length}
-            </span>
+            {tableName}
           </Link>
         </ListItem>
       );
-    } else {
-      if (this.props.order.currentOrderRestaurant)
-        this.props.dispatch(setCurrentOrderRestaurant(undefined));
-      if (this.state.open) {
-        this.setState({
-          open: false
-        });
+    }
+  };
+
+  getOrdersLink = (classes, order, navigation) => {
+    const { currentRestaurant } = this.props.restaurant;
+    if (navigation.isLoggedIn && navigation.user && currentRestaurant) {
+      const numOrders = Object.keys(order.currentOrderList).length;
+      if (numOrders > 0) {
+        return (
+          <ListItem
+            className={classes.listItem}
+            onClick={() => this.handleOrderDialog(true)}
+          >
+            <Link to="#" className={classes.navLink}>
+              Current Order
+              <span className="badge-count">{numOrders}</span>
+            </Link>
+          </ListItem>
+        );
+      } else {
+        if (this.props.order.currentOrderRestaurant) {
+          this.props.dispatch(setCurrentOrderRestaurant(undefined));
+        }
+        if (this.state.open) {
+          this.handleOrderDialog(false);
+        }
       }
     }
+  };
+
+  getActiveOrdersLink = (classes, order, navigation) => {
+    const { currentRestaurant } = this.props.restaurant;
+    if (navigation.isLoggedIn && navigation.user && currentRestaurant) {
+      const numOrders = Object.keys(order.activeOrders).length;
+      if (numOrders > 0) {
+        return (
+          <ListItem
+            className={classes.listItem}
+            onClick={() => this.handleOrderListDialog(true)}
+          >
+            <Link to="#" className={classes.navLink}>
+              Active Orders
+              <span className="badge-count">{numOrders}</span>
+            </Link>
+          </ListItem>
+        );
+      } else {
+        if (this.state.orderListOpen) {
+          this.handleOrderListDialog(false);
+        }
+      }
+    }
+  };
+
+  handleOrderListDialog = orderListOpen => {
+    this.setState({
+      orderListOpen
+    });
   };
 
   handleOrderDialog = open => {
@@ -162,7 +233,8 @@ export class HeaderLinks extends Component {
 const mapStateToProps = state => {
   return {
     navigation: state.NavigationReducer,
-    order: state.OrderReducer
+    order: state.OrderReducer,
+    restaurant: state.RestaurantReducer
   };
 };
 
@@ -170,6 +242,7 @@ HeaderLinks.propTypes = {
   classes: PropTypes.object,
   navigation: PropTypes.object,
   order: PropTypes.object,
+  restaurant: PropTypes.object,
   dispatch: PropTypes.func
 };
 

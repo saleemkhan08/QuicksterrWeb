@@ -1,0 +1,25 @@
+.sidebar-icons {
+  height: 25px;
+  width: 25px;
+}
+
+.sidebar-item {
+  margin: 10px 0 10px 0 !important;
+  color: #999 !important;
+}
+.sidebar-item-text > span {
+  color: #999 !important;
+  font-weight: 300;
+}
+.sidebar-item-active-text > span {
+  color: #222 !important;
+  font-weight: 400;
+}
+.sidebar-item:hover .sidebar-item-text > span {
+  color: #222 !important;
+  font-weight: 400;
+}
+.nested {
+  padding-left: 35px !important;
+}
+/*Saleem*/

@@ -1,5 +1,5 @@
 import { firestore } from "../store";
-import { RESTAURANTS } from "./restaurantActions";
+import { RESTAURANTS } from "../views/RestaurantPage/restaurantActions";
 export const DISPLAY_CATEGORIES_TAB = "DISPLAY_CATEGORIES_TAB";
 export const HIDE_CATEGORIES_TAB = "HIDE_CATEGORIES_TAB";
 export const CATEGORIES = "menu_categories";
@@ -25,12 +25,13 @@ export const DELETE_CATEGORIES_BEGIN = "DELETE_CATEGORIES_BEGIN";
 export const DELETE_CATEGORIES_SUCCESS = "DELETE_CATEGORIES_SUCCESS";
 export const DELETE_CATEGORIES_ERROR = "DELETE_CATEGORIES_ERROR";
 export const RESET_MENU = "RESET_MENU";
-function getCategoryCollectionRef(restaurantId) {
+
+export const getCategoryCollectionRef = restaurantId => {
   return firestore
     .collection(RESTAURANTS)
     .doc(restaurantId)
     .collection(CATEGORIES);
-}
+};
 
 export function fetchCategories(restaurantId) {
   return dispatch => {
@@ -44,6 +45,7 @@ export function fetchCategories(restaurantId) {
         categories.push(doc.data());
       });
       dispatch(fetchCategoriesSuccess(categories));
+      dispatch(setCurrentCategory(categories[0]));
     });
   };
 }

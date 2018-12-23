@@ -17,7 +17,6 @@ import {
   hideCategoriesTabs,
   setCurrentCategory
 } from "../../../../actions/menuActions";
-import TableAndUserSetter from "./TableAndUserSetter";
 import MenuImport from "./MenuImport";
 
 class Menu extends Component {
@@ -63,12 +62,13 @@ class Menu extends Component {
   render() {
     const { isAdmin } = this.props.navigationReducer;
     const isCategoriesLoading = this.props.menuReducer.isLoading;
-    let { isLoading, dishes } = this.props.dishReducer;
+    const { categories } = this.props.menuReducer;
+    const { isLoading, dishes } = this.props.dishReducer;
     const crudItems = this.getCrudItemsFromDishes(dishes);
     return (
       <div>
-        {!isCategoriesLoading || crudItems.length > 0 ? (
-          <div style={{ height: "40px" }} />
+        {!isCategoriesLoading && categories.length > 0 ? (
+          <div className="categoriesPadding" style={{ height: "40px" }} />
         ) : (
           ""
         )}
@@ -93,7 +93,6 @@ class Menu extends Component {
           handleCancel={this.handleCancel}
           dish={this.state.dish}
         />
-        <TableAndUserSetter />
       </div>
     );
   }

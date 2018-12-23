@@ -1,5 +1,5 @@
-import { firestore, database } from "../store";
-import { USERS, RESTAURANT_ID, TYPE } from "./navigationActions";
+import { database } from "../store";
+import { USERS, RESTAURANT_ID } from "./navigationActions";
 export const CHEFS = "chef";
 
 export const ADD_CHEFS = "ADD_CHEFS";
@@ -27,15 +27,19 @@ export function fetchChefs(restaurantId) {
       .equalTo(restaurantId);
     query.on("value", querySnapshot => {
       const restaurantEmployees = querySnapshot.val();
-      const chefs = [];
-      const uids = Object.keys(restaurantEmployees);
-      uids.forEach(uid => {
-        const employee = restaurantEmployees[uid];
-        if (employee.type === CHEFS) {
-          chefs.push(employee);
-        }
-      });
-      dispatch(fetchChefsSuccess(chefs));
+      if (restaurantEmployees) {
+        const chefs = [];
+        const uids = Object.keys(restaurantEmployees);
+        uids.forEach(uid => {
+          const employee = restaurantEmployees[uid];
+          if (employee.type === CHEFS) {
+            chefs.push(employee);
+          }
+        });
+        dispatch(fetchChefsSuccess(chefs));
+      } else {
+        dispatch(fetchChefsError());
+      }
     });
   };
 }
@@ -49,9 +53,8 @@ export const fetchChefsSuccess = chefs => ({
   payload: chefs
 });
 
-export const fetchChefsError = error => ({
-  type: FETCH_CHEFS_ERROR,
-  payload: { error }
+export const fetchChefsError = () => ({
+  type: FETCH_CHEFS_ERROR
 });
 
 export function addChefs(restaurantId, email) {
@@ -73,7 +76,6 @@ export function addChefs(restaurantId, email) {
         dispatch(addChefsSuccess());
       })
       .catch(error => {
-        console.log("addChefs : error ", error);
         dispatch(addChefsError(error));
       });
   };

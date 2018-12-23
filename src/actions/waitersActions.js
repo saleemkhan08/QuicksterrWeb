@@ -1,5 +1,5 @@
-import { firestore, database } from "../store";
-import { USERS, RESTAURANT_ID, TYPE } from "./navigationActions";
+import { database } from "../store";
+import { USERS, RESTAURANT_ID } from "./navigationActions";
 export const WAITERS = "waiter";
 
 export const ADD_WAITERS = "ADD_WAITERS";
@@ -29,15 +29,19 @@ export function fetchWaiters(restaurantId) {
       .equalTo(restaurantId);
     query.on("value", querySnapshot => {
       const restaurantEmployees = querySnapshot.val();
-      const waiters = [];
-      const uids = Object.keys(restaurantEmployees);
-      uids.forEach(uid => {
-        const employee = restaurantEmployees[uid];
-        if (employee.type === WAITERS) {
-          waiters.push(employee);
-        }
-      });
-      dispatch(fetchWaitersSuccess(waiters));
+      if (restaurantEmployees) {
+        const waiters = [];
+        const uids = Object.keys(restaurantEmployees);
+        uids.forEach(uid => {
+          const employee = restaurantEmployees[uid];
+          if (employee.type === WAITERS) {
+            waiters.push(employee);
+          }
+        });
+        dispatch(fetchWaitersSuccess(waiters));
+      } else {
+        dispatch(fetchWaitersError());
+      }
     });
   };
 }
@@ -51,9 +55,8 @@ export const fetchWaitersSuccess = waiters => ({
   payload: waiters
 });
 
-export const fetchWaitersError = error => ({
-  type: FETCH_WAITERS_ERROR,
-  payload: { error }
+export const fetchWaitersError = () => ({
+  type: FETCH_WAITERS_ERROR
 });
 
 export function addWaiters(restaurantId, email) {
@@ -75,7 +78,6 @@ export function addWaiters(restaurantId, email) {
         dispatch(addWaitersSuccess());
       })
       .catch(error => {
-        console.log("addWaiters : error ", error);
         dispatch(addWaitersError(error));
       });
   };
@@ -113,7 +115,6 @@ export function deleteWaiters(email) {
         dispatch(deleteWaitersSuccess());
       })
       .catch(error => {
-        console.log("addWaiters : error ", error);
         dispatch(deleteWaitersError(error));
       });
   };

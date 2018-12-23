@@ -1,0 +1,32 @@
+.flex-center {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -ms-flex-align: center;
+  align-items: center;
+  height: 70vh;
+}
+
+.centered-progress {
+  display: block !important;
+  margin: auto;
+}
+.centered-container {
+  width: 100%;
+}
+
+.centered-text {
+  text-align: center;
+}
+
+.search-field {
+  width: 100%;
+  font-size: 26px !important;
+}
+
+.search-field-container {
+  margin-bottom: 20px !important;
+  padding: 5px 10px 5px 20px !important;
+  display: flex !important;
+}

@@ -10,6 +10,7 @@ export default class EditDialog extends React.Component {
     return (
       <div>
         <Dialog
+          scroll="body"
           open={this.props.open}
           onClose={this.props.handleCancel}
           aria-labelledby="form-dialog-title"

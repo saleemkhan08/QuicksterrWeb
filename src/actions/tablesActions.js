@@ -1,5 +1,5 @@
 import { firestore } from "../store";
-import { RESTAURANTS } from "./restaurantActions";
+import { RESTAURANTS } from "../views/RestaurantPage/restaurantActions";
 export const TABLES = "tables";
 
 export const ADD_TABLES = "ADD_TABLES";

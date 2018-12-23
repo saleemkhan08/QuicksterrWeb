@@ -44,9 +44,9 @@ class DrawerContent extends Component {
 
   render() {
     const { classes } = this.props;
-    const { displayCategories, isLoading } = this.props.reducer;
+    const { isLoading, categories } = this.props.reducer;
     const marginTopHeight =
-      displayCategories && !isLoading
+      categories.length > 0 && !isLoading
         ? { height: "120px" }
         : { height: "75px" };
     return (
@@ -80,7 +80,10 @@ class DrawerContent extends Component {
 
   sideBarItems() {
     return sidebarLinks.map(link => {
-      if (link.name === CATEGORY_DETAILS.name && !this.props.navigation.isAdmin) {
+      if (
+        link.name === CATEGORY_DETAILS.name &&
+        !this.props.navigation.isAdmin
+      ) {
         return "";
       }
       return this.showListItem(link, this.handleItemClick, "");

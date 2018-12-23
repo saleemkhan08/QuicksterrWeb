@@ -13,30 +13,41 @@ import {
   addItemToOrder,
   removeItemFromOrder,
   clearCurrentOrders
-} from "../../../../actions/ordersActions";
+} from "./ordersActions";
 import AddIcon from "@material-ui/icons/AddCircleOutlineRounded";
 import RemoveIcon from "@material-ui/icons/RemoveCircleOutlineRounded";
 import PropTypes from "prop-types";
+import Slide from "@material-ui/core/Slide";
 import "./Order.css";
 import CloseIcon from "@material-ui/icons/Close";
 import {
   placeOrder,
+  openTableAndUserSetter,
   PLACING_ORDER,
   ORDER_PLACED,
-  FAILED_TO_PLACE_ORDER,
   PREPAIRING_ORDER,
-  UPDATING_ORDER,
-  FAILED_TO_UPDATE_ORDER,
-  ORDER_UPDATED,
-  PREPAIRING_UPDATED_ORDER,
   ORDER_PREPAIRED,
   ORDER_SERVED,
-  PAYMENT_RECEIVED
-} from "../../../../actions/ordersActions";
+  PAYMENT_RECEIVED,
+  TAKE_AWAY
+} from "./ordersActions";
 import IconButton from "@material-ui/core/IconButton";
+import TextField from "@material-ui/core/TextField";
 import { showMessage } from "../../../../actions/messageActions";
-class CurrentOrdersDialog extends React.Component {
-  getCompleteOrder = currentOrderList => {
+
+function Transition(props) {
+  return <Slide direction="up" {...props} />;
+}
+
+class CurrentOrderDialog extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      comment: "",
+      isTakeAway: ""
+    };
+  }
+  getCompleteOrder = (currentOrderList, isTakeAway) => {
     let totalOrderPrice = 0;
     let totalPackingCharges = 0;
     let totalTax = 0;
@@ -50,9 +61,12 @@ class CurrentOrdersDialog extends React.Component {
         const order = currentOrderList[key];
         if (order) {
           totalOrderPrice += order.object.price * order.count;
-          totalPackingCharges += order.object.packingCharge * order.count;
+          if (isTakeAway) {
+            totalPackingCharges += order.object.packingCharge * order.count;
+          } else {
+            totalServiceCharges += order.object.serviceCharge * order.count;
+          }
           totalTax += order.object.tax * order.count;
-          totalServiceCharges += order.object.serviceCharge * order.count;
           const tempOrder = order.object;
           tempOrder["count"] = order.count;
           dishes.push(tempOrder);
@@ -63,9 +77,14 @@ class CurrentOrdersDialog extends React.Component {
     completeOrder["totalPackingCharges"] = totalPackingCharges;
     completeOrder["totalTax"] = totalTax;
     completeOrder["totalServiceCharges"] = totalServiceCharges;
+
     completeOrder["totalAmountToPay"] =
       totalOrderPrice + totalPackingCharges + totalTax + totalServiceCharges;
     return completeOrder;
+  };
+
+  handleChange = event => {
+    this.setState({ [event.target.name]: event.target.value });
   };
 
   render() {
@@ -74,33 +93,42 @@ class CurrentOrdersDialog extends React.Component {
       currentOrderList,
       currentOrderRestaurant,
       table,
-      customer,
+      phoneNo,
+      name,
       noOfPeople
     } = this.props.order;
     let restaurantId = currentOrderRestaurant
       ? currentOrderRestaurant.restaurantId
       : undefined;
     const keys = Object.keys(currentOrderList);
-    const completeOrder = this.getCompleteOrder(currentOrderList);
+    const isTakeAway = table === TAKE_AWAY;
+    const completeOrder = this.getCompleteOrder(currentOrderList, isTakeAway);
     const {
       totalPackingCharges,
       totalTax,
       totalServiceCharges,
       totalAmountToPay
     } = completeOrder;
+
     completeOrder["table"] = table;
-    completeOrder["customer"] = customer;
-    completeOrder["status"] = status;
     completeOrder["noOfPeople"] = noOfPeople;
-    this.showStatusMessages(status);
-    const isStatusChanging =
-      status === PLACING_ORDER || status === UPDATING_ORDER;
+    completeOrder["status"] = status;
+    completeOrder["name"] = name ? name : "";
+    completeOrder["phoneNo"] = phoneNo ? phoneNo : "";
+    const isStatusChanging = status === PLACING_ORDER;
+    const tableName = isTakeAway
+      ? TAKE_AWAY + " - "
+      : table
+      ? table.name + " - "
+      : "";
+
     return (
       <Dialog
         open={this.props.open}
         onClose={this.props.handleClose}
         scroll="paper"
         aria-labelledby="scroll-dialog-title"
+        TransitionComponent={Transition}
       >
         <IconButton
           key="close"
@@ -113,10 +141,16 @@ class CurrentOrdersDialog extends React.Component {
           <CloseIcon />
         </IconButton>
 
-        <DialogTitle id="scroll-dialog-title">
-          {this.getTitle(status)}
+        <DialogTitle
+          id="scroll-dialog-title"
+          className="dialog-title"
+          onClick={() => {
+            this.props.dispatch(openTableAndUserSetter());
+          }}
+        >
+          {tableName + this.getTitle(status)}
         </DialogTitle>
-        <DialogContent>
+        <DialogContent className="dialog-content">
           {isStatusChanging ? <LinearProgress /> : ""}
 
           <List>
@@ -129,14 +163,17 @@ class CurrentOrdersDialog extends React.Component {
               );
             })}
           </List>
-          <div className="extra-charges-container">
-            <p className="extra-charges-text">PACKING CHARGES</p>
-            <p className="extra-charges-text">{"₹" + totalPackingCharges}</p>
-          </div>
-          <div className="extra-charges-container">
-            <p className="extra-charges-text">SERVICE TAX (5%)</p>
-            <p className="extra-charges-text">{"₹" + totalServiceCharges}</p>
-          </div>
+          {isTakeAway ? (
+            <div className="extra-charges-container">
+              <p className="extra-charges-text">PACKING CHARGES</p>
+              <p className="extra-charges-text">{"₹" + totalPackingCharges}</p>
+            </div>
+          ) : (
+            <div className="extra-charges-container">
+              <p className="extra-charges-text">SERVICE TAX (5%)</p>
+              <p className="extra-charges-text">{"₹" + totalServiceCharges}</p>
+            </div>
+          )}
           <div className="extra-charges-container">
             <p className="extra-charges-text">SGST (2.5%)</p>
             <p className="extra-charges-text">{"₹" + totalTax / 2}</p>
@@ -147,6 +184,20 @@ class CurrentOrdersDialog extends React.Component {
           </div>
         </DialogContent>
         <div className="dialog-action-container">
+          <TextField
+            id="comment"
+            label="Comments to chef/cook"
+            type="comment"
+            name="comment"
+            autoComplete="comment"
+            margin="normal"
+            variant="outlined"
+            multiline
+            rowsMax="4"
+            fullWidth
+            onChange={this.handleChange}
+            value={this.state.comment}
+          />
           <div className="total-container">
             <p className="total-text">TOTAL</p>
             <p className="total-text">{"₹" + totalAmountToPay}</p>
@@ -173,22 +224,6 @@ class CurrentOrdersDialog extends React.Component {
     );
   }
 
-  showStatusMessages = status => {
-    switch (status) {
-      case FAILED_TO_PLACE_ORDER:
-        this.props.dispatch(
-          showMessage("Failed to place the order! Please try again")
-        );
-        return;
-      case FAILED_TO_UPDATE_ORDER:
-        this.props.dispatch(
-          showMessage("Failed to updated the order! Please try again")
-        );
-        return;
-      default:
-        return;
-    }
-  };
   getTitle = status => {
     switch (status) {
       case PLACING_ORDER:
@@ -196,12 +231,6 @@ class CurrentOrdersDialog extends React.Component {
       case ORDER_PLACED:
         return "Order Placed";
       case PREPAIRING_ORDER:
-        return "Prepairing Order...";
-      case UPDATING_ORDER:
-        return "Updating Order...";
-      case ORDER_UPDATED:
-        return "Order Placed";
-      case PREPAIRING_UPDATED_ORDER:
         return "Prepairing Order...";
       case ORDER_PREPAIRED:
         return "Order Prepaired";
@@ -240,11 +269,20 @@ class CurrentOrdersDialog extends React.Component {
     }
   };
   handlePlaceOrder = (resId, completeOrder) => {
-    this.props.dispatch(placeOrder(resId, completeOrder));
+    completeOrder["comment"] = this.state.comment;
+    const { table } = this.props.order;
+    if (table) {
+      this.props.dispatch(placeOrder(resId, completeOrder));
+    } else {
+      this.props.dispatch(openTableAndUserSetter());
+      this.props.dispatch(
+        showMessage("Please enter the table and user info to proceed..")
+      );
+    }
   };
 }
 
-CurrentOrdersDialog.propTypes = {
+CurrentOrderDialog.propTypes = {
   open: PropTypes.bool,
   dispatch: PropTypes.func,
   order: PropTypes.object,
@@ -257,4 +295,4 @@ const mapStateToProps = state => {
   };
 };
 
-export default connect(mapStateToProps)(CurrentOrdersDialog);
+export default connect(mapStateToProps)(CurrentOrderDialog);

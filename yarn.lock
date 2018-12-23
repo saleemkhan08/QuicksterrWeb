@@ -6795,6 +6795,11 @@ react-datetime@2.15.0:
     prop-types "^15.5.7"
     react-onclickoutside "^6.5.0"
 
+react-detect-offline@^2.1.2:
+  version "2.1.2"
+  resolved "https://registry.yarnpkg.com/react-detect-offline/-/react-detect-offline-2.1.2.tgz#1827b1db88c8ae40ca70dfd995dfb0aff702126b"
+  integrity sha512-wO0CWabGz2/vb6QS7gueFVOdvlHY4xGdi7v3at9FMNmUB94ZNHAZcIPsOx5JSVlZajKH1I/6mFX23xgwrWCjkA==
+
 react-dev-utils@^5.0.2:
   version "5.0.2"
   resolved "https://registry.yarnpkg.com/react-dev-utils/-/react-dev-utils-5.0.2.tgz#7bb68d2c4f6ffe7ed1184c5b0124fcad692774d2"

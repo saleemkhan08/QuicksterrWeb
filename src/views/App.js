@@ -14,7 +14,11 @@ import PropTypes from "prop-types";
 import MessagingComponent from "../components/MessagingComponent";
 import UploadImageDialog from "./UploadImageDialog";
 import "./App.css";
-
+import { Offline } from "react-detect-offline";
+import offlineImage from "../assets/img/offlineImage.svg";
+import Dialog from "@material-ui/core/Dialog";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogTitle from "@material-ui/core/DialogTitle";
 class App extends Component {
   componentDidMount() {
     this.unregisterAuthObserver = firebase.auth().onAuthStateChanged(user => {
@@ -23,28 +27,40 @@ class App extends Component {
   }
   render() {
     return (
-      <BrowserRouter>
-        <div>
-          <Header
-            brand="Queue Breaker"
-            fixed
-            changeColorOnScroll={{
-              height: 200,
-              color: "white"
-            }}
-          >
-            <HeaderLinks />
-          </Header>
-          <Switch>
-            <Route path="/" exact component={LandingPage} />
-            <Route path="/dashboard/:restaurantId" component={Dashboard} />
-            <Route path="/restaurants" component={RestaurantPage} />
-          </Switch>
-          <Footer />
-          <MessagingComponent />
-          <UploadImageDialog />
-        </div>
-      </BrowserRouter>
+      <div>
+        <BrowserRouter>
+          <div>
+            <Header
+              brand="Queue Breaker"
+              fixed
+              changeColorOnScroll={{
+                height: 200,
+                color: "white"
+              }}
+            >
+              <HeaderLinks />
+            </Header>
+            <Switch>
+              <Route path="/" exact component={LandingPage} />
+              <Route path="/dashboard/:restaurantId" component={Dashboard} />
+              <Route path="/restaurants" component={RestaurantPage} />
+            </Switch>
+            <Footer />
+            <MessagingComponent />
+            <UploadImageDialog />
+          </div>
+        </BrowserRouter>
+        <Offline>
+          <Dialog open={true} aria-labelledby="responsive-dialog-title">
+            <DialogContent className="offlineImgContainer">
+              <img src={offlineImage} className="offlineImg" alt="offlineImg" />
+            </DialogContent>
+            <DialogTitle id="responsive-dialog-title">
+              <h1 className="offlineText">You are offline</h1>
+            </DialogTitle>
+          </Dialog>
+        </Offline>
+      </div>
     );
   }
 
