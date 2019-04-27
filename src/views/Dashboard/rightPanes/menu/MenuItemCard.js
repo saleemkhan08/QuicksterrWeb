@@ -14,6 +14,7 @@ import RemoveIcon from "@material-ui/icons/RemoveCircleOutlineRounded";
 import Button from "@material-ui/core/Button";
 import order from "../../../../assets/img/sidebar-icons/orders.svg";
 import "./MenuStyle.css";
+import Fab from "@material-ui/core/Fab";
 import { connect } from "react-redux";
 import { RESTAURANTS } from "../../../../views/RestaurantPage/restaurantActions";
 import { CATEGORIES } from "../../../../actions/menuActions";
@@ -21,6 +22,7 @@ import {
   addItemToOrder,
   removeItemFromOrder,
   setCurrentOrderRestaurant,
+  openVariantOrderDialog,
   CLEAR_CURRENT_ORDERS
 } from "../orders/ordersActions";
 import { showMessage } from "../../../../actions/messageActions";
@@ -34,13 +36,15 @@ export class MenuItemCard extends Component {
     if (currentCategory) {
       let icon = item && item.icon ? item.icon : currentCategory.icon;
       icon = icon ? icon : MENU_ITEM_DETAILS.icon;
-      const itemName = item ? item.name + ", " : "" + currentCategory.name;
+      const itemName = item ? item.name : "" + currentCategory.name;
       const itemId = item ? item.id : "";
       const itemDescription = item ? item.description : "";
       const currentCategoryId = currentCategory ? currentCategory.id : "";
       const isDisabled = item.object.active !== "Y";
       let menuItemClass = "menuCardContainer";
       if (isDisabled) menuItemClass = "menuCardContainer-disabled";
+      const variants = item.object.variant.split(",");
+      const isCustomizable = variants.length > 1;
       return (
         <GridItem xs={12} sm={6} md={4} lg={3}>
           <Paper className={menuItemClass}>
@@ -61,7 +65,9 @@ export class MenuItemCard extends Component {
             <h5 className="cardHeading">{itemName}</h5>
             <p className="cardDescription">{itemDescription}</p>
             <Divider className="divider" />
-            {isDisabled ? this.showUnavailable() : this.getOrderLayout(item)}
+            {isDisabled
+              ? this.showUnavailable()
+              : this.getOrderLayout(item, isCustomizable)}
           </Paper>
         </GridItem>
       );
@@ -73,24 +79,50 @@ export class MenuItemCard extends Component {
     return <h3 className="unavailable"> Unavailable</h3>;
   };
 
-  getOrderLayout(item) {
-    const currentOrderListRef = this.props.order.currentOrderList[item.id];
-    const currentOrderList = currentOrderListRef ? currentOrderListRef : item;
-    currentOrderList.count = currentOrderListRef ? currentOrderList.count : 0;
-
-    const displayCount = currentOrderList.count > 0 ? "flex" : "none";
-    const displayCountInverse = currentOrderList.count > 0 ? "none" : "flex";
-
+  getOrderLayout(item, isCustomizable) {
+    const price = item.object.price.split(",")[0];
     return (
       <div className="textContainer">
-        <h3 className="price"> &#8377; {item.object.price}</h3>
+        <h3 className="price"> &#8377; {price}</h3>
+        {isCustomizable
+          ? this.showExtendedTrayFab(item)
+          : this.showTrayFab(item)}
+      </div>
+    );
+  }
+  showExtendedTrayFab = item => {
+    return (
+      <Fab
+        onClick={() => this.customizeItemToOrder(item)}
+        variant="extended"
+        aria-label="customize"
+        className="customize-order"
+      >
+        <span className="customize-order-txt">Customize</span>
+        <img alt="" src={order} className="orderImage" />
+      </Fab>
+    );
+  };
+
+  customizeItemToOrder = item => {
+    this.props.dispatch(openVariantOrderDialog(item));
+  };
+
+  showTrayFab = item => {
+    const existingOrderItem = this.props.order.currentOrderList[item.id];
+    const currentOrderItem = existingOrderItem ? existingOrderItem : item;
+    currentOrderItem.count = existingOrderItem ? existingOrderItem.count : 0;
+    const displayCount = currentOrderItem.count > 0 ? "flex" : "none";
+    const displayCountInverse = currentOrderItem.count > 0 ? "none" : "flex";
+    return (
+      <div className="textContainer">
         <Button
           variant="fab"
           aria-label="Add"
           color="default"
           size="small"
           className="orderButton"
-          onClick={() => this.addItemToOrder(currentOrderList)}
+          onClick={() => this.addItemToOrder(currentOrderItem)}
           style={{ display: `${displayCountInverse}` }}
         >
           <img alt="" src={order} className="orderImage" />
@@ -99,14 +131,14 @@ export class MenuItemCard extends Component {
           <div className="orderCountContainer">
             <IconButton
               className="orderCountIcon"
-              onClick={() => this.addItemToOrder(currentOrderList)}
+              onClick={() => this.addItemToOrder(currentOrderItem)}
             >
               <AddIcon />
             </IconButton>
-            <h5 className="orderCount"> {currentOrderList.count} </h5>
+            <h5 className="orderCount"> {currentOrderItem.count} </h5>
             <IconButton
               className="orderCountIcon"
-              onClick={() => this.removeItemFromOrder(currentOrderList)}
+              onClick={() => this.removeItemFromOrder(currentOrderItem)}
             >
               <RemoveIcon />
             </IconButton>
@@ -114,8 +146,7 @@ export class MenuItemCard extends Component {
         </div>
       </div>
     );
-  }
-
+  };
   showImgUploadBtn = (keywords, id, catId) => {
     if (this.props.showAdminOptions) {
       const { restaurantId } = this.props.restaurant.currentRestaurant;

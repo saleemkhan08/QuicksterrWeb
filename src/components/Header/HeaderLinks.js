@@ -22,7 +22,15 @@ import {
   TAKE_AWAY
 } from "../../views/Dashboard/rightPanes/orders/ordersActions";
 import TableAndUserSetter from "../../views/Dashboard/rightPanes/menu/TableAndUserSetter";
+import ProfileDialog from "./ProfileDialog";
+import { openProfileDialog } from "../../actions/navigationActions";
 const dashboardUserList = ["user", "masterAdmin"];
+const activeOrdersUserList = [
+  "restaurantAdmin",
+  "masterAdmin",
+  "waiter",
+  "chef"
+];
 export class HeaderLinks extends Component {
   constructor(props) {
     super(props);
@@ -35,6 +43,7 @@ export class HeaderLinks extends Component {
   render() {
     const { classes, navigation, order } = this.props;
     const showMainPageLinks = ["/"].includes(window.location.pathname);
+    const { user } = navigation;
     return (
       <div>
         <List className={classes.list}>
@@ -42,6 +51,7 @@ export class HeaderLinks extends Component {
           {this.getOrdersLink(classes, order, navigation)}
           {this.getActiveOrdersLink(classes, order, navigation)}
           {this.getUserOptions(classes, navigation)}
+          {user ? this.getLink(classes, "Restaurants", "/restaurants") : ""}
           {showMainPageLinks
             ? this.getHrefLink(classes, "About", "/#about")
             : ""}
@@ -52,7 +62,7 @@ export class HeaderLinks extends Component {
             ? this.getHrefLink(classes, "Contact", "/#contact")
             : ""}
           {navigation.isLoggedIn
-            ? this.getLogoutLink(classes, navigation)
+            ? this.getProfile(classes, navigation)
             : this.getLoginLink(classes, navigation)}
         </List>
         <CurrentOrderDialog
@@ -65,6 +75,7 @@ export class HeaderLinks extends Component {
           onClose={() => this.handleOrderListDialog(false)}
         />
         <TableAndUserSetter />
+        {user ? <ProfileDialog /> : ""}
       </div>
     );
   }
@@ -83,7 +94,6 @@ export class HeaderLinks extends Component {
         <ListItem
           className={classes.listItem}
           onClick={() => {
-            console.log("getTableLink : clicked");
             this.props.dispatch(openTableAndUserSetter());
           }}
         >
@@ -124,7 +134,12 @@ export class HeaderLinks extends Component {
 
   getActiveOrdersLink = (classes, order, navigation) => {
     const { currentRestaurant } = this.props.restaurant;
-    if (navigation.isLoggedIn && navigation.user && currentRestaurant) {
+    if (
+      navigation.isLoggedIn &&
+      navigation.user &&
+      currentRestaurant &&
+      activeOrdersUserList.includes(navigation.user.type)
+    ) {
       const numOrders = Object.keys(order.activeOrders).length;
       if (numOrders > 0) {
         return (
@@ -172,7 +187,7 @@ export class HeaderLinks extends Component {
     if (navigation.isLoggedIn && navigation.user) {
       return dashboardUserList.includes(navigation.user.type) ||
         !navigation.user.restaurantId
-        ? this.getLink(classes, "Restaurants", "/restaurants")
+        ? ""
         : this.getLink(
             classes,
             "Dashboard",
@@ -216,15 +231,15 @@ export class HeaderLinks extends Component {
     }
   };
 
-  getLogoutLink = classes => {
+  getProfile = classes => {
     return (
       <ListItem className={classes.listItem}>
         <Link
-          to=""
+          to="#"
           className={classes.navLink}
-          onClick={() => firebase.auth().signOut()}
+          onClick={() => this.props.dispatch(openProfileDialog())}
         >
-          LOGOUT
+          Profile
         </Link>
       </ListItem>
     );

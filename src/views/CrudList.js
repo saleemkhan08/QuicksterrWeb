@@ -27,13 +27,15 @@ import {
   NOTIFICATION_DETAILS,
   TABLE_DETAILS,
   CATEGORY_DETAILS,
-  IMAGES_DETAILS
+  IMAGES_DETAILS,
+  KITCHEN_DETAILS
 } from "../actions/navigationActions";
 import { openImageUploadDialog } from "../actions/imagesActions";
 import Button from "@material-ui/core/Button";
 import { TABLES } from "../actions/tablesActions";
 import { CATEGORIES } from "../actions/menuActions";
-class CRUDList extends Component {
+import KitchenItemCard from "./Dashboard/rightPanes/kitchen/KitchenItemCard";
+class CrudList extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -184,6 +186,15 @@ class CRUDList extends Component {
           case ORDER_DETAILS.type:
             return (
               <OrderItemCard
+                key={item.id}
+                item={item}
+                handleDeleteClick={this.handleDeleteClick}
+                handleEdit={this.props.handleEdit}
+              />
+            );
+          case KITCHEN_DETAILS.type:
+            return (
+              <KitchenItemCard
                 key={item.id}
                 item={item}
                 handleDeleteClick={this.handleDeleteClick}
@@ -353,7 +364,7 @@ class CRUDList extends Component {
   }
 }
 
-CRUDList.propTypes = {
+CrudList.propTypes = {
   showUploadingCard: PropTypes.bool,
   items: PropTypes.array,
   detail: PropTypes.object,
@@ -380,4 +391,4 @@ const mapStateToProps = state => {
   };
 };
 
-export default connect(mapStateToProps)(withStyles(styles)(CRUDList));
+export default connect(mapStateToProps)(withStyles(styles)(CrudList));

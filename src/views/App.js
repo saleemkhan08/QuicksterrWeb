@@ -31,7 +31,7 @@ class App extends Component {
         <BrowserRouter>
           <div>
             <Header
-              brand="Queue Breaker"
+              brand="Quicksterr"
               fixed
               changeColorOnScroll={{
                 height: 200,

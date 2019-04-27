@@ -20,6 +20,7 @@ import CRUDList from "../CrudList";
 import RestaurantEditDialog from "./RestaurantEditDialog";
 import RestaurantAddDialog from "./RestaurantAddDialog";
 import { setAdminStatus, MASTER_ADMIN } from "../../actions/navigationActions";
+import { Redirect } from "react-router-dom";
 class RestaurantPage extends React.Component {
   constructor(props) {
     super(props);
@@ -47,17 +48,26 @@ class RestaurantPage extends React.Component {
     }
   }
 
+  componentWillUnmount() {
+    this.props.dispatch(setAdminStatus(false));
+  }
+
   render() {
     const { isLoading } = this.props.reducer;
     const { restaurants } = this.props.reducer;
     //set admin status
-    const { user, isAdmin } = this.props.navigation;
+    const { user, isAdmin, isLoggingLoading } = this.props.navigation;
     if (user) {
       const isAdminTemp = user.type === MASTER_ADMIN;
       if (isAdminTemp !== isAdmin) {
         this.props.dispatch(setAdminStatus(isAdminTemp));
       }
+    } else {
+      if (!isLoggingLoading) {
+        return <Redirect to="" />;
+      }
     }
+
     const crudItems = this.getCrudItemsFromRestaurants(restaurants);
     return (
       <div>

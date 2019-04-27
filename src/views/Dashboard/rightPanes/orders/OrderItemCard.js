@@ -5,15 +5,20 @@ import Paper from "@material-ui/core/Paper";
 import Divider from "@material-ui/core/Divider";
 import "./Order.css";
 import { connect } from "react-redux";
-import { getStatus } from "./ordersActions";
+import { getStatus, openOrderDetailDialog } from "./ordersActions";
 
 class OrderItemCard extends Component {
   render() {
-    const { table, noOfPeople, timeStamp, totalAmountToPay } = this.props.item;
+    const { table, timeStamp, totalAmountToPay, name } = this.props.item;
     const { icon, text } = getStatus(this.props.item);
     return (
       <GridItem xs={12} sm={6} md={4} lg={3}>
-        <Paper className="menuCardContainer">
+        <Paper
+          className="menuCardContainer"
+          onClick={() =>
+            this.props.dispatch(openOrderDetailDialog(this.props.item))
+          }
+        >
           {icon.includes(".svg") ? (
             <img alt="" className="menuItemImgContain" src={icon} />
           ) : (
@@ -21,15 +26,10 @@ class OrderItemCard extends Component {
           )}
           <div className="title-container">
             <div>
-              <h5 className="table-name">{table.name}</h5>
+              <h5 className="table-name">{name}</h5>
               <p className="status">{text}</p>
             </div>
-            <div>
-              <h5 className="people-count">
-                {noOfPeople && noOfPeople > 1
-                  ? noOfPeople + " People"
-                  : "1 Person"}
-              </h5>
+            <div className="time-stamp-container">
               <p className="time-stamp">{timeStamp}</p>
             </div>
           </div>

@@ -14,6 +14,7 @@ import GridContainer from "../../../../components/Grid/GridContainer";
 import GridItem from "../../../../components/Grid/GridItem";
 import { CenteredText } from "../../../../components/Centered/CenteredUtils";
 import Switch from "@material-ui/core/Switch";
+import { showMessage } from "../../../../actions/messageActions";
 
 export class TableAndUserSetter extends Component {
   constructor(props) {
@@ -190,6 +191,8 @@ export class TableAndUserSetter extends Component {
                 onClick={() => {
                   if (item.isAvailable) {
                     this.onLinkClick(item);
+                  } else {
+                    this.props.dispatch(showMessage("Already Occupied..."));
                   }
                 }}
               >

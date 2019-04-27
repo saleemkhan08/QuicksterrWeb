@@ -2,11 +2,15 @@ import chefs from "../assets/img/sidebar-icons/chefs.svg";
 import orders from "../assets/img/sidebar-icons/orders.svg";
 import tables from "../assets/img/sidebar-icons/tables.svg";
 import waiters from "../assets/img/sidebar-icons/waiters.svg";
+import cooking from "../assets/img/sidebar-icons/cooking.svg";
 import notifications from "../assets/img/sidebar-icons/notifications.svg";
 import category from "../assets/img/sidebar-icons/category.svg";
 import menu from "../assets/img/sidebar-icons/menu.svg";
 import dish from "../assets/img/sidebar-icons/dishes.svg";
 import { database } from "../store";
+import firebase from "firebase/app";
+import "firebase/auth";
+
 export const LOGIN_USER = "LOGIN_USER";
 export const LOGOUT_USER = "LOGOUT_USER";
 export const CHANGE_NAVBAR_COLOR = "CHANGE_NAVBAR_COLOR";
@@ -16,14 +20,17 @@ export const RESTAURANT_ID = "restaurantId";
 export const TYPE = "type";
 export const CHANGE_MAIN_CONTENT_TYPE = "CHANGE_MAIN_CONTENT_TYPE";
 export const SET_ADMIN_STATUS = "SET_ADMIN_STATUS";
+export const OPEN_PROFILE_DIALOG = "OPEN_PROFILE_DIALOG";
+export const CLOSE_PROFILE_DIALOG = "CLOSE_PROFILE_DIALOG";
 export const USERS_FETCH_SUCCESS = "USERS_FETCH_SUCCESS";
+
 export const RESTAURANT_DETAILS = {
   name: "Restaurants",
   type: "RESTAURANT_DETAILS",
   icon: tables,
   emptyListMsg: "No restaurants found!",
   restrictionMsg:
-    "You cannot delete this restaurant! Please contact Queue Breaker Admin.",
+    "You cannot delete this restaurant! Please contact Quicksterr Admin.",
   deleteConfirmMsgStart: 'Are you sure you want to delete "',
   deleteConfirmMsgEnd: '"?'
 };
@@ -65,7 +72,12 @@ export const TABLE_DETAILS = {
   deleteConfirmMsgStart: 'Are you sure you want to delete "',
   deleteConfirmMsgEnd: '"?'
 };
-
+export const KITCHEN_DETAILS = {
+  name: "Kitchen",
+  type: "KITCHEN_DETAILS",
+  icon: cooking,
+  emptyListMsg: "No item to be prepared"
+};
 export const CHEF_DETAILS = {
   name: "Chefs",
   type: "CHEF_DETAILS",
@@ -118,6 +130,7 @@ export const sidebarLinks = [
   ORDER_DETAILS,
   TABLE_DETAILS,
   CHEF_DETAILS,
+  KITCHEN_DETAILS,
   WAITER_DETAILS,
   NOTIFICATION_DETAILS
 ];
@@ -150,6 +163,21 @@ export const changeNavbarColor = color => ({
   type: CHANGE_NAVBAR_COLOR,
   payload: color
 });
+
+export const openProfileDialog = () => ({
+  type: OPEN_PROFILE_DIALOG
+});
+
+export const closeProfileDialog = () => ({
+  type: CLOSE_PROFILE_DIALOG
+});
+
+export function logout() {
+  firebase.auth().signOut();
+  return dispatch => {
+    dispatch(logoutUser());
+  };
+}
 
 export const logoutUser = () => ({
   type: LOGOUT_USER

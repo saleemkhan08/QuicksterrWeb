@@ -5,11 +5,34 @@ import {
   CHANGE_NAVBAR_COLOR,
   CHANGE_MAIN_CONTENT_TYPE,
   SET_ADMIN_STATUS,
-  USERS_FETCH_SUCCESS
+  USERS_FETCH_SUCCESS,
+  OPEN_PROFILE_DIALOG,
+  CLOSE_PROFILE_DIALOG
 } from "../actions/navigationActions";
-
+const initialState = {
+  isLoggedIn: false,
+  isLoggingLoading: true,
+  user: null,
+  navbarColor: "white",
+  mainContentType: "Menu",
+  isAdmin: false,
+  openProfileDialog: false,
+  users: []
+};
 const NavigationReducer = (state = initialState, action) => {
   switch (action.type) {
+    case OPEN_PROFILE_DIALOG:
+      return {
+        ...state,
+        openProfileDialog: true
+      };
+
+    case CLOSE_PROFILE_DIALOG:
+      return {
+        ...state,
+        openProfileDialog: false
+      };
+
     case LOGIN_USER:
       return {
         ...state,
@@ -53,16 +76,6 @@ const NavigationReducer = (state = initialState, action) => {
     default:
       return state;
   }
-};
-
-const initialState = {
-  isLoggedIn: false,
-  isLoggingLoading: true,
-  user: null,
-  navbarColor: "white",
-  mainContentType: "Menu",
-  isAdmin: false,
-  users: []
 };
 
 export default NavigationReducer;

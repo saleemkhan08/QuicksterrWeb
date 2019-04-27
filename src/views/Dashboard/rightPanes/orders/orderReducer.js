@@ -27,7 +27,13 @@ import {
   TAKE_AWAY,
   UPDATE_ORDER_STATUS_BEGIN,
   UPDATE_ORDER_STATUS_SUCCESS,
-  UPDATE_ORDER_STATUS_ERROR
+  UPDATE_ORDER_STATUS_ERROR,
+  OPEN_VARIANT_ORDER_DIALOG,
+  CLOSE_VARIANT_ORDER_DIALOG,
+  OPEN_ORDER_DETAIL_DIALOG,
+  CLOSE_ORDER_DETAIL_DIALOG,
+  FETCH_ORDERS_TO_BE_PREPARED_BEGIN,
+  FETCH_ORDERS_TO_BE_PREPARED_SUCCESS
 } from "./ordersActions";
 
 // RESET_ORDER -> PLACING_ORDER -> ORDER_PLACED -> PREPAIRING_ORDER -> ORDER_PREPAIRED -> ORDER_SERVED;
@@ -39,8 +45,10 @@ import {
 const initialState = {
   orders: [],
   activeOrders: [],
+  ordersToBePrepared: [],
   isLoading: true,
   isActiveLoading: true,
+  isOrdersToBePreparedLoading: true,
   isStatusLoading: false,
   error: null,
   currentOrderList: {},
@@ -50,11 +58,50 @@ const initialState = {
   table: undefined,
   noOfPeople: 1,
   name: "",
-  phoneNo: ""
+  phoneNo: "",
+  currentDish: undefined,
+  openVariantOrderDialog: false,
+  openOrderDetailDialog: false,
+  selectedOrder: undefined
 };
 
 const OrderReducer = (state = initialState, action) => {
   switch (action.type) {
+    case FETCH_ORDERS_TO_BE_PREPARED_BEGIN:
+      return {
+        ...state,
+        isOrdersToBePreparedLoading: true
+      };
+    case FETCH_ORDERS_TO_BE_PREPARED_SUCCESS:
+      return {
+        ...state,
+        isOrdersToBePreparedLoading: false,
+        ordersToBePrepared: action.payload
+      };
+    case OPEN_ORDER_DETAIL_DIALOG:
+      return {
+        ...state,
+        openOrderDetailDialog: true,
+        selectedOrder: action.payload
+      };
+    case CLOSE_ORDER_DETAIL_DIALOG:
+      return {
+        ...state,
+        openOrderDetailDialog: false,
+        selectedOrder: undefined
+      };
+    case OPEN_VARIANT_ORDER_DIALOG:
+      return {
+        ...state,
+        openVariantOrderDialog: true,
+        currentDish: action.payload
+      };
+    case CLOSE_VARIANT_ORDER_DIALOG:
+      return {
+        ...state,
+        openVariantOrderDialog: false,
+        currentDish: undefined
+      };
     case UPDATE_ORDER_STATUS_BEGIN:
       return {
         ...state,
@@ -192,7 +239,6 @@ const OrderReducer = (state = initialState, action) => {
         phoneNo: ""
       };
     case OPEN_TABLE_AND_USER_SETTER: {
-      console.log("OPEN_TABLE_AND_USER_SETTER");
       return {
         ...state,
         openTableAndUserSetter: true

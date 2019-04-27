@@ -204,6 +204,9 @@
   text-align: right !important;
   margin: auto 10px 0 10px !important;
 }
+.time-stamp-container {
+  display: flex;
+}
 .menuCardContainer {
   padding: 0px;
   margin-bottom: 20px;

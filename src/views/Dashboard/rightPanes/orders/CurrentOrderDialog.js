@@ -12,7 +12,8 @@ import LinearProgress from "@material-ui/core/LinearProgress";
 import {
   addItemToOrder,
   removeItemFromOrder,
-  clearCurrentOrders
+  clearCurrentOrders,
+  USER_ID
 } from "./ordersActions";
 import AddIcon from "@material-ui/icons/AddCircleOutlineRounded";
 import RemoveIcon from "@material-ui/icons/RemoveCircleOutlineRounded";
@@ -68,6 +69,8 @@ class CurrentOrderDialog extends React.Component {
           }
           totalTax += order.object.tax * order.count;
           const tempOrder = order.object;
+          tempOrder["name"] = order.name;
+          tempOrder["id"] = order.id;
           tempOrder["count"] = order.count;
           dishes.push(tempOrder);
         }
@@ -121,7 +124,6 @@ class CurrentOrderDialog extends React.Component {
       : table
       ? table.name + " - "
       : "";
-
     return (
       <Dialog
         open={this.props.open}
@@ -246,7 +248,7 @@ class CurrentOrderDialog extends React.Component {
     if (order) {
       const price = "₹" + order.object.price * order.count;
       return (
-        <ListItem button className="order-list-item">
+        <ListItem className="order-list-item">
           <ListItemText primary={order.name} className="order-text" />
           <div className="orderCountContainer">
             <IconButton
@@ -270,7 +272,19 @@ class CurrentOrderDialog extends React.Component {
   };
   handlePlaceOrder = (resId, completeOrder) => {
     completeOrder["comment"] = this.state.comment;
+    completeOrder[USER_ID] = this.props.navigation.user.email;
     const { table } = this.props.order;
+    const { activeOrders } = this.props.order;
+    let takeAwayCount = 1;
+    let takeAwayName = "";
+    activeOrders.forEach(order => {
+      takeAwayName = TAKE_AWAY + " (" + takeAwayCount + ")";
+      if (order.name === takeAwayName) {
+        takeAwayCount++;
+      }
+    });
+    takeAwayName = TAKE_AWAY + " (" + takeAwayCount + ")";
+    completeOrder.name = takeAwayName;
     if (table) {
       this.props.dispatch(placeOrder(resId, completeOrder));
     } else {
@@ -286,12 +300,14 @@ CurrentOrderDialog.propTypes = {
   open: PropTypes.bool,
   dispatch: PropTypes.func,
   order: PropTypes.object,
-  handleClose: PropTypes.func
+  handleClose: PropTypes.func,
+  navigation: PropTypes.object
 };
 
 const mapStateToProps = state => {
   return {
-    order: state.OrderReducer
+    order: state.OrderReducer,
+    navigation: state.NavigationReducer
   };
 };
 

@@ -294,3 +294,15 @@
   width: 100%;
   text-align: center;
 }
+
+.customize-order-txt {
+  font-size: 14px;
+  margin-right: 5px;
+}
+
+.customize-order {
+  margin: auto 15px auto 15px !important;
+}
+.order-text {
+  text-transform: capitalize;
+}

@@ -25,7 +25,8 @@ import {
   CATEGORY_DETAILS,
   NOTIFICATION_DETAILS,
   MASTER_ADMIN,
-  RESTAURANT_ADMIN
+  RESTAURANT_ADMIN,
+  KITCHEN_DETAILS
 } from "../../actions/navigationActions";
 import { fetchChefs } from "../../actions/chefsActions";
 import { fetchCategories, resetMenu } from "../../actions/menuActions";
@@ -37,43 +38,88 @@ import { fetchTables } from "../../actions/tablesActions";
 import { fetchWaiters } from "../../actions/waitersActions";
 import {
   fetchOrders,
-  fetchActiveOrders
+  fetchActiveOrders,
+  fetchOrdersToBePrepared
 } from "./rightPanes/orders/ordersActions";
+import { Redirect } from "react-router-dom";
+import Kitchen from "./rightPanes/kitchen/Kitchen";
 class Dashboard extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      paramRestaurantId: ""
+    };
+  }
   componentDidMount() {
     //Changing the navbar color
+    const { restaurantId } = this.props.match.params;
+    this.setState({
+      paramRestaurantId: restaurantId
+    });
+    this.setupData(restaurantId);
+  }
+
+  setupData = restaurantId => {
     if (this.props.navigation.navbarColor !== "white") {
       this.props.dispatch(changeNavbarColor("white"));
     }
     //setting the current restaurant
-    const { restaurantId } = this.props.match.params;
-    this.props.dispatch(fetchCurrentRestaurant(restaurantId));
 
+    this.props.dispatch(fetchCurrentRestaurant(restaurantId));
+    const { isAdmin, user } = this.props.navigation;
     // Fetching the data pre-hand to imporve the speed
     this.props.dispatch(fetchCategories(restaurantId));
     this.props.dispatch(fetchTables(restaurantId));
     this.props.dispatch(fetchChefs(restaurantId));
     this.props.dispatch(fetchWaiters(restaurantId));
-    this.props.dispatch(fetchOrders(restaurantId));
+    if (user) {
+      this.props.dispatch(fetchOrders(restaurantId, isAdmin, user.email));
+    }
+
     this.props.dispatch(fetchActiveOrders(restaurantId));
+    this.props.dispatch(fetchOrdersToBePrepared(restaurantId));
     //Setting the default tab for dashboard
     this.props.dispatch(changeMainContentType());
+  };
+
+  componentDidUpdate(nextProps) {
+    const { restaurantId } = nextProps.match.params;
+    if (this.state.paramRestaurantId !== restaurantId) {
+      this.setupData(restaurantId);
+      this.setState({
+        paramRestaurantId: restaurantId
+      });
+    }
   }
   componentWillUnmount() {
+    this.props.dispatch(setAdminStatus(false));
     this.props.dispatch(resetMenu());
     this.props.dispatch(resetCurrentRestaurant());
   }
   render() {
+    const listItems = [
+      { name: "saleem", age: "10" },
+      { name: "khan", age: "12" }
+    ];
+    console.log("localeCompare listitems:", listItems);
+    console.log(
+      "localeCompare sorted:",
+      listItems.sort((a, b) => a.name.localeCompare(b.name))
+    );
     const { classes } = this.props;
     const { restaurantId } = this.props.match.params;
     //set admin status
-    const { user, isAdmin } = this.props.navigation;
+    const { user, isAdmin, isLoggingLoading } = this.props.navigation;
     if (user) {
       const isAdminTemp =
         user.type === MASTER_ADMIN ||
         (user.restaurantId === restaurantId && user.type === RESTAURANT_ADMIN);
-      if (isAdminTemp !== isAdmin) {
+      if (isAdminTemp && isAdminTemp !== isAdmin) {
         this.props.dispatch(setAdminStatus(isAdminTemp));
+      }
+    } else {
+      if (!isLoggingLoading) {
+        return <Redirect to="" />;
       }
     }
     return (
@@ -98,6 +144,8 @@ class Dashboard extends React.Component {
         return <Tables restaurantId={restaurantId} />;
       case CHEF_DETAILS.name:
         return <Chefs restaurantId={restaurantId} />;
+      case KITCHEN_DETAILS.name:
+        return <Kitchen restaurantId={restaurantId} />;
       case WAITER_DETAILS.name:
         return <Waiters restaurantId={restaurantId} />;
       case CATEGORY_DETAILS.name:

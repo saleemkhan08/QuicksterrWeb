@@ -5,7 +5,6 @@ import ListItem from "@material-ui/core/ListItem";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import Dialog from "@material-ui/core/Dialog";
 import { connect } from "react-redux";
-import { TAKE_AWAY } from "./ordersActions";
 import Collapse from "@material-ui/core/Collapse";
 import IconButton from "@material-ui/core/IconButton";
 import ExpandLess from "@material-ui/icons/ExpandLess";
@@ -13,6 +12,7 @@ import ExpandMore from "@material-ui/icons/ExpandMore";
 import Prev from "@material-ui/icons/ChevronLeftRounded";
 import Next from "@material-ui/icons/ChevronRightRounded";
 import Button from "@material-ui/core/Button";
+import CloseIcon from "@material-ui/icons/Close";
 import {
   getStatus,
   prevStatus,
@@ -43,28 +43,34 @@ class CurrentOrdersListDialog extends React.Component {
         onClose={this.handleClose}
         className="active-order-dialog"
       >
+        <IconButton
+          key="close"
+          color="default"
+          className="close-dialog-btn"
+          onClick={this.handleClose}
+        >
+          <CloseIcon />
+        </IconButton>
         <DialogTitle className="active-orders-dialog-title">
           Acitve Orders
         </DialogTitle>
         <div>
           <List>
             {activeOrders.map(order => {
-              const name =
-                order.table === TAKE_AWAY ? TAKE_AWAY : order.table.name;
-              return this.getOrderListItems(restaurantId, order, name);
+              return this.getOrderListItems(restaurantId, order);
             })}
           </List>
         </div>
       </Dialog>
     );
   }
-  getOrderListItems = (restaurantId, order, name) => {
+  getOrderListItems = (restaurantId, order) => {
     return (
       <ListItem key={order.id} className="list-item-expanded-outer-container">
         <div className="list-item-expanded-container">
           <div className="list-item-container">
             <div className="list-item-text">
-              <span className="list-item-name">{name}</span>
+              <span className="list-item-name">{order.name}</span>
               <span className="list-item-status">{getStatus(order).text}</span>
             </div>
 

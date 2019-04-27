@@ -18,6 +18,7 @@ import {
   setCurrentCategory
 } from "../../../../actions/menuActions";
 import MenuImport from "./MenuImport";
+import VariantOrderDialog from "./VariantOrderDialog";
 
 class Menu extends Component {
   constructor(props) {
@@ -62,12 +63,12 @@ class Menu extends Component {
   render() {
     const { isAdmin } = this.props.navigationReducer;
     const isCategoriesLoading = this.props.menuReducer.isLoading;
-    const { categories } = this.props.menuReducer;
+    const { categories, displayCategories } = this.props.menuReducer;
     const { isLoading, dishes } = this.props.dishReducer;
     const crudItems = this.getCrudItemsFromDishes(dishes);
     return (
       <div>
-        {!isCategoriesLoading && categories.length > 0 ? (
+        {displayCategories && !isCategoriesLoading && categories.length > 0 ? (
           <div className="categoriesPadding" style={{ height: "40px" }} />
         ) : (
           ""
@@ -93,6 +94,7 @@ class Menu extends Component {
           handleCancel={this.handleCancel}
           dish={this.state.dish}
         />
+        <VariantOrderDialog />
       </div>
     );
   }

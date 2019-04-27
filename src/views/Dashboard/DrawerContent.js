@@ -44,9 +44,9 @@ class DrawerContent extends Component {
 
   render() {
     const { classes } = this.props;
-    const { isLoading, categories } = this.props.reducer;
+    const { isLoading, categories, displayCategories } = this.props.reducer;
     const marginTopHeight =
-      categories.length > 0 && !isLoading
+      categories.length > 0 && !isLoading && displayCategories
         ? { height: "120px" }
         : { height: "75px" };
     return (
